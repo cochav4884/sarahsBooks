@@ -4,130 +4,163 @@
   <meta charset="UTF-8" />
   <title>Book Tracker</title>
 
-<link rel="icon" type="image/png" href="public/favicon-96x96.png" sizes="96x96" />
-<link rel="icon" type="image/svg+xml" href="public/favicon.svg" />
-<link rel="shortcut icon" href="public/favicon.ico" />
-<link rel="apple-touch-icon" sizes="180x180" href="public/apple-touch-icon.png" />
-<meta name="apple-mobile-web-app-title" content="Book Tracker" />
-<link rel="manifest" href="public/site.webmanifest" />
+  <!-- Favicon & Manifest -->
+  <link rel="icon" type="image/png" href="public/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="public/favicon.svg" />
+  <link rel="shortcut icon" href="public/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="public/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-title" content="Book Tracker" />
+  <link rel="manifest" href="public/site.webmanifest" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="styles/index.css" />
 </head>
 <body>
 
-<!-- Back to Top Button -->
-<button type="button" id="backToTop" title="Back to top">↑ Back To Top</button>
+  <!-- Back to Top Button -->
+  <button type="button" id="backToTop" title="Back To Top">↑</button>
 
-<!-- NAV -->
-<header class="nav">
-  <a href="index.html" class="logo-link">
-    <img src="images/logo.jpg" alt="Logo" class="nav-logo" />
-    <span class="nav-brand">📚 Book Tracker</span>
-  </a>
-</header>
+  <!-- NAV -->
+  <header class="nav">
+    <a href="index.html" class="logo-link">
+      <img src="images/logo.jpg" alt="Logo" class="nav-logo" />
+      <span class="nav-brand">📚 Book Tracker</span>
+    </a>
+  </header>
 
-<!-- JUMBOTRON -->
-<section class="jumbotron">
-  <img src="images/authorImage.jpg" alt="Author" />
-  <div>
-    <h1>Author: Sarah Morales</h1>
-    <h3>Self-Published</h3>
-    <p>Track every book from idea to publication.</p>
+  <!-- JUMBOTRON -->
+  <section class="jumbotron">
+    <img src="images/authorImage.jpg" alt="Author" />
+    <div>
+      <h1>Author: Sarah Morales</h1>
+      <h3>Self-Published</h3>
+      <p>Track every book from idea to publication.</p>
+    </div>
+  </section>
+
+  <!-- MAIN -->
+  <main>
+    <div class="controls">
+      <button id="addCard">➕ Add Book</button>
+      <button id="resetAll">🔄 Reset All</button>
+    </div>
+
+    <section id="cardsContainer"></section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <p>Author: Sarah Morales | <span id="year"></span></p>
+    <p>
+      <a type="button" href="privacyPolicy.html">Privacy Policy</a> |
+      <a type="button" href="legalDisclaimer.html">Legal Disclaimer</a>
+    </p>
+  </footer>
+
+  <script>
+    /* STORAGE AND CARDS LOGIC */
+    const STORAGE_KEY = "bookCards";
+
+    function createEmptyCard() {
+      return { title:"", stages:[false,false,false,false,false], startDate:"", publishDate:"", copyrightDate:"" };
+    }
+
+    function defaultCards() { return Array.from({length:12},()=>createEmptyCard()); }
+    function loadCards() { const data=localStorage.getItem(STORAGE_KEY); return data?JSON.parse(data):defaultCards(); }
+    function saveCards(cards){ localStorage.setItem(STORAGE_KEY,JSON.stringify(cards)); }
+
+    function renderCards() {
+      const container=document.getElementById("cardsContainer");
+      container.innerHTML="";
+      const cards=loadCards();
+
+      cards.forEach((card,index)=>{
+        const cardEl=document.createElement("div");
+        cardEl.className="book-card";
+        cardEl.innerHTML = `
+  <div class="title-container">
+    <input class="title" placeholder="Book Title" value="${card.title}" />
+    <button class="open-book btn">Open Book</button>
   </div>
-</section>
-
-<!-- MAIN -->
-<main>
-  <div class="controls">
-    <button id="addCard">➕ Add Book</button>
-    <button id="resetAll">🔄 Reset All</button>
+  <div class="stages">
+    ${["Planning","Rough Draft","Second Draft","Final Draft","Published"].map((s,i)=>
+      `<label><input type="checkbox" ${card.stages[i]?"checked":""}>${s}</label>`
+    ).join("")}
   </div>
+  <div class="dates">
+    <label>Start Date<input type="date" value="${card.startDate}"/></label>
+    <label>Published<input type="date" value="${card.publishDate}"/></label>
+    <label>Copyright<input type="date" value="${card.copyrightDate}"/></label>
+  </div>
+  <button class="reset-card">Reset This Book</button>
+`;
 
-  <section id="cardsContainer"></section>
-</main>
+// Title edit (save on blur and allow dblclick to edit)
+const titleInput = cardEl.querySelector(".title");
+titleInput.addEventListener("dblclick", () => { titleInput.removeAttribute("readonly"); titleInput.focus(); });
+titleInput.addEventListener("blur", () => {
+  titleInput.setAttribute("readonly", true);
+  cards[index].title = titleInput.value;
+  saveCards(cards);
+});
 
-<!-- FOOTER -->
-<footer class="site-footer">
-  <p>Author: Sarah Morales | <span id="year"></span></p>
-  <p>
-    <a type="button" href="privacyPolicy.html">Privacy Policy</a> |
-    <a type="button" href="legalDisclaimer.html">Legal Disclaimer</a>
-  </p>
-</footer>
+        // Open Book Button
+        cardEl.querySelector(".open-book").addEventListener("click",()=>{
+          if(!titleInput.value){
+            alert("Please enter a book title first!");
+            return;
+          }
+          // Open the book page (customize if needed per book)
+          window.open("book.html", "_blank");
+        });
 
-<script>
-/* STORAGE AND CARDS LOGIC */
-const STORAGE_KEY = "bookCards";
+        // Stages
+        cardEl.querySelectorAll(".stages input").forEach((box,i)=>box.addEventListener("change",e=>{
+          cards[index].stages[i]=e.target.checked;
+          saveCards(cards);
+        }));
 
-function createEmptyCard() {
-  return { title:"", stages:[false,false,false,false,false], startDate:"", publishDate:"", copyrightDate:"" };
-}
+        // Dates
+        const dateInputs=cardEl.querySelectorAll(".dates input");
+        dateInputs[0].addEventListener("change",e=>cards[index].startDate=e.target.value);
+        dateInputs[1].addEventListener("change",e=>cards[index].publishDate=e.target.value);
+        dateInputs[2].addEventListener("change",e=>cards[index].copyrightDate=e.target.value);
+        dateInputs.forEach(i=>i.addEventListener("change",()=>saveCards(cards)));
 
-function defaultCards() { return Array.from({length:12},()=>createEmptyCard()); }
-function loadCards() { const data=localStorage.getItem(STORAGE_KEY); return data?JSON.parse(data):defaultCards(); }
-function saveCards(cards){ localStorage.setItem(STORAGE_KEY,JSON.stringify(cards)); }
+        // Reset card
+        cardEl.querySelector(".reset-card").addEventListener("click",()=>{
+          cards[index]=createEmptyCard();
+          saveCards(cards);
+          renderCards();
+        });
 
-function renderCards() {
-  const container=document.getElementById("cardsContainer");
-  container.innerHTML="";
-  const cards=loadCards();
+        container.appendChild(cardEl);
+      });
+    }
 
-  cards.forEach((card,index)=>{
-    const cardEl=document.createElement("div");
-    cardEl.className="book-card";
-    cardEl.innerHTML=`
-      <a href="book.html" class="book-link"><input class="title" placeholder="Book Title" value="${card.title}" readonly/></a>
-      <div class="stages">${["Planning","Rough Draft","Second Draft","Final Draft","Published"].map((s,i)=>`<label><input type="checkbox" ${card.stages[i]?"checked":""}>${s}</label>`).join("")}</div>
-      <div class="dates">
-        <label>Start Date<input type="date" value="${card.startDate}"/></label>
-        <label>Published<input type="date" value="${card.publishDate}"/></label>
-        <label>Copyright<input type="date" value="${card.copyrightDate}"/></label>
-      </div>
-      <button class="reset-card">Reset This Book</button>
-    `;
+    /* BUTTONS */
+    document.getElementById("addCard").onclick=()=>{ 
+      const cards=loadCards(); 
+      cards.push(createEmptyCard()); 
+      saveCards(cards); 
+      renderCards();
+    };
+    document.getElementById("resetAll").onclick=()=>{
+      localStorage.removeItem(STORAGE_KEY); 
+      renderCards();
+    };
 
-    // Title edit
-    const titleInput=cardEl.querySelector(".title");
-    titleInput.addEventListener("dblclick",()=>{ titleInput.removeAttribute("readonly"); titleInput.focus(); });
-    titleInput.addEventListener("blur",()=>{ titleInput.setAttribute("readonly",true); cards[index].title=titleInput.value; saveCards(cards); });
+    /* INIT */
+    renderCards();
 
-    // Stages
-    cardEl.querySelectorAll(".stages input").forEach((box,i)=>box.addEventListener("change",e=>{ cards[index].stages[i]=e.target.checked; saveCards(cards); }));
+    /* Back to Top */
+    const backToTop=document.getElementById("backToTop");
+    window.onscroll=()=>{ backToTop.style.display=(document.body.scrollTop>200||document.documentElement.scrollTop>200)?"block":"none"; };
+    backToTop.addEventListener("click",()=>{ window.scrollTo({top:0,behavior:"smooth"}); });
 
-    // Dates
-    const dateInputs=cardEl.querySelectorAll(".dates input");
-    dateInputs[0].addEventListener("change",e=>cards[index].startDate=e.target.value);
-    dateInputs[1].addEventListener("change",e=>cards[index].publishDate=e.target.value);
-    dateInputs[2].addEventListener("change",e=>cards[index].copyrightDate=e.target.value);
-    dateInputs.forEach(i=>i.addEventListener("change",()=>saveCards(cards)));
-
-    // Reset card
-    cardEl.querySelector(".reset-card").addEventListener("click",()=>{ cards[index]=createEmptyCard(); saveCards(cards); renderCards(); });
-
-    container.appendChild(cardEl);
-  });
-}
-
-/* BUTTONS */
-document.getElementById("addCard").onclick=()=>{
-  const cards=loadCards(); cards.push(createEmptyCard()); saveCards(cards); renderCards();
-};
-document.getElementById("resetAll").onclick=()=>{
-  localStorage.removeItem(STORAGE_KEY); renderCards();
-};
-
-/* INIT */
-renderCards();
-
-/* Back to Top */
-const backToTop=document.getElementById("backToTop");
-window.onscroll=()=>{ backToTop.style.display=(document.body.scrollTop>200||document.documentElement.scrollTop>200)?"block":"none"; };
-backToTop.addEventListener("click",()=>{ window.scrollTo({top:0,behavior:"smooth"}); });
-
-/* Year */
-document.getElementById("year").textContent=new Date().getFullYear();
-</script>
+    /* Year */
+    document.getElementById("year").textContent=new Date().getFullYear();
+  </script>
 
 </body>
 </html>
