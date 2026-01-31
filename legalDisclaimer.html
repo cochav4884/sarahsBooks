@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Legal Disclaimer</title>
+
+<link rel="icon" type="image/png" href="public/favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/svg+xml" href="public/favicon.svg" />
+<link rel="shortcut icon" href="public/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="public/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-title" content="Book Tracker" />
+<link rel="manifest" href="public/site.webmanifest" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="styles/index.css">
+</head>
+<body>
+<!-- Back to Top + Footer -->
+<button type="button" id="backToTop" title="Back to top">↑ Back To Top</button>
+
+<!-- NAV -->
+<header class="nav">
+  <a href="index.html" class="logo-link">
+    <img src="images/logo.jpg" alt="Logo" class="nav-logo" />
+    <span class="nav-brand">📚 Book Tracker</span>
+  </a>
+</header>
+
+
+<main class="reading-container">
+  <h1 class="book-title">Legal Disclaimer</h1>
+  <p>The Book Tracker app is provided for personal, educational, and organizational use only. By using this app, you agree to the following terms:</p>
+
+  <h2>Content Responsibility</h2>
+  <p>All books uploaded or entered into the app are the responsibility of the user. The app creators do not claim ownership or liability for user-generated content.</p>
+
+  <h2>No Liability</h2>
+  <p>The app is provided "as is" without warranties of any kind. We are not responsible for any data loss or device issues resulting from using this app.</p>
+
+  <h2>External Links</h2>
+  <p>Any links to external resources are provided for convenience and do not constitute endorsement. We are not responsible for external content.</p>
+
+  <h2>Changes to Disclaimer</h2>
+  <p>We may update this legal disclaimer periodically. Continued use of the app constitutes acceptance of any changes.</p>
+</main>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <p>Author: Sarah Morales | <span id="year"></span></p>
+  <p>
+    <a type="button" href="privacyPolicy.html">Privacy Policy</a> |
+    <a type="button" href="legalDisclaimer.html">Legal Disclaimer</a>
+  </p>
+</footer>
+
+<script>
+/* Back to Top */
+const backToTop = document.getElementById("backToTop");
+window.onscroll = function() {
+  if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+    backToTop.style.display = "block";
+  } else {
+    backToTop.style.display = "none";
+  }
+};
+backToTop.addEventListener("click", () => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+document.getElementById("year").textContent = new Date().getFullYear();
+
+/* Hamburger */
+document.getElementById("hamburger").onclick = () => {
+  document.getElementById("navMenu").classList.toggle("show");
+};
+</script>
+
+</body>
+</html>

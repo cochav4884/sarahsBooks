@@ -1,0 +1,158 @@
+:root {
+  --coffee: #4b382a;
+  --forest: #2f4f3e;
+  --sage: #a8bfa6;
+  --mint: #cfe8dc;
+  --cream: #f6f1eb;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: system-ui, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--cream);
+  color: var(--coffee);
+}
+
+/* NAV HEADER LIKE MAIN NAVBAR */
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: var(--forest);
+  color: white;
+  border-bottom: 2px solid var(--sage);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.nav .back-btn {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  background: var(--sage);
+  transition: all 0.3s;
+}
+
+.nav .back-btn:hover {
+  background: var(--mint);
+  color: var(--coffee);
+}
+
+.nav .nav-brand {
+  font-weight: 700;
+  font-size: 1.25rem;
+  text-align: center;
+  flex: 1;
+}
+
+/* MAIN CONTENT */
+.reading-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.book-title {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+/* Book selection dropdown */
+.reading-container select.form-select {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  border: 2px solid var(--sage);
+  background: var(--mint);
+  color: var(--coffee);
+  font-size: 1rem;
+}
+
+/* PDF Viewer */
+#bookViewer {
+  width: 100%;
+  height: 80vh;
+  border-radius: 16px;
+  border: 2px solid var(--forest);
+  background: var(--cream);
+  margin-top: 1rem;
+}
+
+/* Back to Top Button */
+#backToTop {
+  display: none;
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  z-index: 99;
+  background: var(--forest);
+  color: white;
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: 50%;
+  font-size: 1.25rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  transition: background 0.3s;
+}
+#backToTop:hover {
+  background: var(--coffee);
+}
+
+/* FOOTER */
+.site-footer {
+  background: var(--forest);
+  color: white;
+  text-align: center;
+  padding: 1.25rem;
+  margin-top: 2rem;
+}
+
+.site-footer a {
+  color: var(--mint);
+  text-decoration: none;
+  margin: 0 0.5rem;
+}
+
+.site-footer a:hover {
+  text-decoration: underline;
+}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .nav {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+  .nav .back-btn {
+    align-self: flex-start;
+  }
+  .nav .nav-brand {
+    font-size: 1.1rem;
+  }
+}
+
+@media(max-width:600px){
+  .reading-container {
+    padding: 1rem;
+  }
+  .site-footer p {
+    font-size: 0.9rem;
+    margin: 0.25rem 0;
+  }
+}

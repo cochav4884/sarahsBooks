@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Read Book</title>
+  <title>Privacy Policy</title>
+
 <link rel="icon" type="image/png" href="public/favicon-96x96.png" sizes="96x96" />
 <link rel="icon" type="image/svg+xml" href="public/favicon.svg" />
 <link rel="shortcut icon" href="public/favicon.ico" />
@@ -10,37 +11,36 @@
 <meta name="apple-mobile-web-app-title" content="Book Tracker" />
 <link rel="manifest" href="public/site.webmanifest" />
 
-
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="styles/book.css">
+  <link rel="stylesheet" href="styles/index.css">
 </head>
 <body>
-<!-- Back to Top Button -->
-<button id="backToTop" title="Back to top" type="button">↑ Back To Top</button>
+<!-- Back to Top + Footer -->
+<button type="button" id="backToTop" title="Back to top">↑ Back To Top</button>
 
+<!-- NAV -->
 <header class="nav">
-  <a href="index.html" class="back-btn">← Back to Library</a>
-  <span class="nav-brand">📖 Read Book</span>
+  <a href="index.html" class="logo-link">
+    <img src="images/logo.jpg" alt="Logo" class="nav-logo" />
+    <span class="nav-brand">📚 Book Tracker</span>
+  </a>
 </header>
 
 <main class="reading-container">
-  <h1 class="book-title">Select a Book</h1>
+  <h1 class="book-title">Privacy Policy</h1>
+  <p>Welcome to the Book Tracker app. Your privacy is important to us. This page explains what information we collect and how we use it.</p>
 
-  <!-- Book Selection -->
-  <div>
-    <label>Select a PDF:</label>
-    <select class="form-select" onchange="loadBook(this.value)" aria-label="Select Book PDF">
-      <option value="">-- Choose a Book --</option>
-      <option value="books/my-first-book.pdf">My First Book</option>
-      <option value="books/dragon-story.pdf">Dragon Story</option>
-      <option value="books/poems.pdf">Poems</option>
-    </select>
-  </div>
+  <h2>Information Collection</h2>
+  <p>We do not collect any personal information from users. All data about books and progress is stored locally on your device using your browser's storage.</p>
 
-  <!-- PDF Viewer -->
-  <div >
-    <iframe title="book0" id="bookViewer" src=""></iframe>
-  </div>
+  <h2>Use of Information</h2>
+  <p>Since all information is local, it is never shared or transmitted to any server or third party.</p>
+
+  <h2>Third-Party Content</h2>
+  <p>Any books uploaded by the user remain private on your device. We do not host or access uploaded content.</p>
+
+  <h2>Changes to Policy</h2>
+  <p>We may update this Privacy Policy from time to time. Please review this page periodically for updates.</p>
 </main>
 
 <!-- FOOTER -->
@@ -51,17 +51,10 @@
     <a type="button" href="legalDisclaimer.html">Legal Disclaimer</a>
   </p>
 </footer>
-<script>
-function loadBook(filePath) {
-  if(!filePath) return;
-  document.getElementById("bookViewer").src = filePath;
-}
-</script>
 
 <script>
-// Back to Top Button Logic
+/* Back to Top */
 const backToTop = document.getElementById("backToTop");
-
 window.onscroll = function() {
   if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
     backToTop.style.display = "block";
@@ -69,14 +62,15 @@ window.onscroll = function() {
     backToTop.style.display = "none";
   }
 };
-
 backToTop.addEventListener("click", () => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
-
-// Set current year dynamically in footer
 document.getElementById("year").textContent = new Date().getFullYear();
 
+/* Hamburger */
+document.getElementById("hamburger").onclick = () => {
+  document.getElementById("navMenu").classList.toggle("show");
+};
 </script>
 
 </body>
