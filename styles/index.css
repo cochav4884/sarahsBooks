@@ -1,0 +1,217 @@
+:root {
+  --coffee: #4b382a;
+  --forest: #2f4f3e;
+  --sage: #a8bfa6;
+  --mint: #cfe8dc;
+  --cream: #f6f1eb;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: var(--cream);
+  color: var(--coffee);
+}
+
+/* NAV */
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: var(--forest);
+  color: white;
+}
+
+.nav nav button {
+  background: var(--mint);
+  border: none;
+  padding: 0.5rem 0.75rem;
+  margin: 0.25rem;
+  border-radius: 8px;
+}
+
+.hamburger {
+  display: none;
+}
+
+/* JUMBOTRON */
+.jumbotron {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 2rem;
+  background: var(--sage);
+}
+
+.jumbotron img {
+  width: 150px;
+  border-radius: 50%;
+  margin-right: 1.5rem;
+}
+
+/* MAIN */
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.controls button {
+  padding: 0.75rem 1.25rem;
+  border-radius: 10px;
+  border: none;
+  background: var(--forest);
+  color: white;
+}
+
+.book-card {
+  background: white;
+  margin: 1.5rem auto;
+  padding: 1.5rem;
+  width: 95%;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.book-card .title {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.stages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.dates {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1rem;
+}
+
+.reset-card {
+  margin-top: 1rem;
+  background: var(--mint);
+  border: none;
+  padding: 0.6rem;
+  border-radius: 8px;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .hamburger {
+    display: block;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: white;
+  }
+
+  .nav nav {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .nav nav.show {
+    display: flex;
+  }
+}
+ 
+/*======================
+   Book Detail Page
+=======================*/
+.reading-container {
+  max-width: 700px;
+  margin: auto;
+  padding: 2rem;
+  line-height: 1.7;
+  background: white;
+  border-radius: 16px;
+}
+
+.back-btn {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.book-link {
+  text-decoration: none;
+  color: inherit;
+}
+.book-link:hover {
+  text-decoration: underline;
+}
+.book-link:visited {
+  color: var(--coffee);
+}
+.book-title {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.book-cover {
+  display: block;
+  margin: 1rem auto;
+  max-width: 200px;
+  border-radius: 8px;
+}
+.chapter-list {
+  list-style: none;
+  padding: 0;
+}
+.chapter-list li {
+  margin: 0.5rem 0;
+}
+.chapter-list li.read {
+  text-decoration: line-through;
+  color: gray;
+}
+.chapter-list li button {
+  margin-left: 1rem;
+  padding: 0.25rem 0.5rem;
+  border: none;
+  border-radius: 6px;
+  background: var(--forest);
+  color: white;
+}
+.chapter-list li button:hover {
+  background: var(--coffee);
+}
+.chapter-list li button:disabled {
+  background: gray;
+  cursor: not-allowed;
+}
+.chapter-list li button:disabled:hover {
+  background: gray;
+}
+
+/* Book Reader PDF Viewer */
+#bookViewer {
+  width: 100%;
+  height: 80vh; /* full height of viewport minus margins */
+  border-radius: 16px;
+  border: 2px solid var(--forest);
+  background: var(--cream);
+}
+
+/* Book selection dropdown */
+.reading-container select {
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 2px solid var(--sage);
+  background: var(--mint);
+  color: var(--coffee);
+  width: 100%;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+}

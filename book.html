@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Read Book</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="styles/index.css">
+</head>
+<body>
+
+<header class="nav">
+  <a href="index.html" class="back-btn">← Back to Library</a>
+  <span class="nav-brand">📖 Read Book</span>
+</header>
+
+<main class="reading-container">
+  <h1 class="book-title">Select a Book</h1>
+
+  <!-- Book Selection -->
+  <div>
+    <label>Select a PDF:</label>
+    <select class="form-select" onchange="loadBook(this.value)" aria-label="Select Book PDF">
+      <option value="">-- Choose a Book --</option>
+      <option value="books/my-first-book.pdf">My First Book</option>
+      <option value="books/dragon-story.pdf">Dragon Story</option>
+      <option value="books/poems.pdf">Poems</option>
+    </select>
+  </div>
+
+  <!-- PDF Viewer -->
+  <div >
+    <iframe title="book0" id="bookViewer" src=""></iframe>
+  </div>
+</main>
+
+<script>
+function loadBook(filePath) {
+  if(!filePath) return;
+  document.getElementById("bookViewer").src = filePath;
+}
+</script>
+
+</body>
+</html>
