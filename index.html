@@ -18,7 +18,7 @@
 <body>
 
   <!-- Back to Top Button -->
-  <button type="button" id="backToTop" title="Back To Top">↑</button>
+  <button type="button" id="backToTop" title="Back To Top">↑ Back To Top</button>
 
   <!-- NAV -->
   <header class="nav">
@@ -40,12 +40,13 @@
 
   <!-- MAIN -->
   <main>
-    <div class="controls">
-      <button id="addCard">➕ Add Book</button>
-      <button id="resetAll">🔄 Reset All</button>
-    </div>
 
     <section id="cardsContainer"></section>
+
+    <div class="controls">
+      <button type="button" id="addCard">➕ Add Book</button>
+      <button type="button" id="resetAll">🔄 Reset All</button>
+    </div>
   </main>
 
   <!-- FOOTER -->
@@ -74,70 +75,76 @@
       container.innerHTML="";
       const cards=loadCards();
 
-      cards.forEach((card,index)=>{
-        const cardEl=document.createElement("div");
-        cardEl.className="book-card";
-        cardEl.innerHTML = `
-  <div class="title-container">
-    <input class="title" placeholder="Book Title" value="${card.title}" />
-    <button class="open-book btn">Open Book</button>
-  </div>
-  <div class="stages">
-    ${["Planning","Rough Draft","Second Draft","Final Draft","Published"].map((s,i)=>
-      `<label><input type="checkbox" ${card.stages[i]?"checked":""}>${s}</label>`
-    ).join("")}
-  </div>
-  <div class="dates">
-    <label>Start Date<input type="date" value="${card.startDate}"/></label>
-    <label>Published<input type="date" value="${card.publishDate}"/></label>
-    <label>Copyright<input type="date" value="${card.copyrightDate}"/></label>
-  </div>
-  <button class="reset-card">Reset This Book</button>
-`;
+      cards.forEach((card, index) => {
+  const cardEl = document.createElement("div");
+  cardEl.className = "book-card";
+  cardEl.innerHTML = `
+    <div class="title-container">
+      <input class="title" placeholder="Book Title" value="${card.title}" />
+      <button class="open-book btn">Open Book</button>
+      <button class="delete-book btn">Delete Book</button>
+    </div>
+    <div class="stages">
+      ${["Planning","Rough Draft","Second Draft","Final Draft","Published"].map((s,i)=>
+        `<label><input type="checkbox" ${card.stages[i]?"checked":""}>${s}</label>`
+      ).join("")}
+    </div>
+    <div class="dates">
+      <label>Start Date<input type="date" value="${card.startDate}"/></label>
+      <label>Published<input type="date" value="${card.publishDate}"/></label>
+      <label>Copyright<input type="date" value="${card.copyrightDate}"/></label>
+    </div>
+    <button class="reset-card">Reset This Book</button>
+  `;
 
-// Title edit (save on blur and allow dblclick to edit)
-const titleInput = cardEl.querySelector(".title");
-titleInput.addEventListener("dblclick", () => { titleInput.removeAttribute("readonly"); titleInput.focus(); });
-titleInput.addEventListener("blur", () => {
-  titleInput.setAttribute("readonly", true);
-  cards[index].title = titleInput.value;
-  saveCards(cards);
-});
+  // Save title on blur
+  const titleInput = cardEl.querySelector(".title");
+  titleInput.addEventListener("blur", () => { 
+    cards[index].title = titleInput.value; 
+    saveCards(cards); 
+  });
 
-        // Open Book Button
-        cardEl.querySelector(".open-book").addEventListener("click",()=>{
-          if(!titleInput.value){
-            alert("Please enter a book title first!");
-            return;
-          }
-          // Open the book page (customize if needed per book)
-          window.open("book.html", "_blank");
-        });
-
-        // Stages
-        cardEl.querySelectorAll(".stages input").forEach((box,i)=>box.addEventListener("change",e=>{
-          cards[index].stages[i]=e.target.checked;
-          saveCards(cards);
-        }));
-
-        // Dates
-        const dateInputs=cardEl.querySelectorAll(".dates input");
-        dateInputs[0].addEventListener("change",e=>cards[index].startDate=e.target.value);
-        dateInputs[1].addEventListener("change",e=>cards[index].publishDate=e.target.value);
-        dateInputs[2].addEventListener("change",e=>cards[index].copyrightDate=e.target.value);
-        dateInputs.forEach(i=>i.addEventListener("change",()=>saveCards(cards)));
-
-        // Reset card
-        cardEl.querySelector(".reset-card").addEventListener("click",()=>{
-          cards[index]=createEmptyCard();
-          saveCards(cards);
-          renderCards();
-        });
-
-        container.appendChild(cardEl);
-      });
+  // Open Book button
+  cardEl.querySelector(".open-book").addEventListener("click", () => {
+    if(!titleInput.value){
+      alert("Please enter a book title first!");
+      return;
     }
+    window.open("book.html", "_blank");
+  });
 
+  // Delete Book button
+  cardEl.querySelector(".delete-book").addEventListener("click", () => {
+    if(confirm(`Delete "${titleInput.value}"? This cannot be undone.`)) {
+      cards.splice(index, 1); // remove from array
+      saveCards(cards);
+      renderCards(); // re-render
+    }
+  });
+
+  // Stages checkboxes
+  cardEl.querySelectorAll(".stages input").forEach((box,i)=>box.addEventListener("change", e=>{
+    cards[index].stages[i]=e.target.checked;
+    saveCards(cards);
+  }));
+
+  // Dates
+  const dateInputs = cardEl.querySelectorAll(".dates input");
+  dateInputs[0].addEventListener("change", e=>cards[index].startDate=e.target.value);
+  dateInputs[1].addEventListener("change", e=>cards[index].publishDate=e.target.value);
+  dateInputs[2].addEventListener("change", e=>cards[index].copyrightDate=e.target.value);
+  dateInputs.forEach(i=>i.addEventListener("change",()=>saveCards(cards)));
+
+  // Reset card
+  cardEl.querySelector(".reset-card").addEventListener("click", () => {
+    cards[index] = createEmptyCard();
+    saveCards(cards);
+    renderCards();
+  });
+
+  container.appendChild(cardEl);
+});
+    }
     /* BUTTONS */
     document.getElementById("addCard").onclick=()=>{ 
       const cards=loadCards(); 

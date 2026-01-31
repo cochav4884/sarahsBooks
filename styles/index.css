@@ -118,6 +118,15 @@ body {
   cursor: pointer;
 }
 
+/* Add space between title/stages and dates */
+.book-card .dates label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* space between label text and input */
+}
+
+
+
 /* Back to Top */
 #backToTop {
   display: none;
