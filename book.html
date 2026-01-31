@@ -3,81 +3,90 @@
 <head>
   <meta charset="UTF-8">
   <title>Read Book</title>
-<link rel="icon" type="image/png" href="public/favicon-96x96.png" sizes="96x96" />
-<link rel="icon" type="image/svg+xml" href="public/favicon.svg" />
-<link rel="shortcut icon" href="public/favicon.ico" />
-<link rel="apple-touch-icon" sizes="180x180" href="public/apple-touch-icon.png" />
-<meta name="apple-mobile-web-app-title" content="Book Tracker" />
-<link rel="manifest" href="public/site.webmanifest" />
 
+  <!-- Favicon & Manifest -->
+  <link rel="icon" type="image/png" href="public/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="public/favicon.svg" />
+  <link rel="shortcut icon" href="public/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="public/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-title" content="Book Tracker" />
+  <link rel="manifest" href="public/site.webmanifest" />
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="styles/book.css">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="styles/book.css">
 </head>
 <body>
-<!-- Back to Top Button -->
-<button id="backToTop" title="Back to top" type="button">↑ Back To Top</button>
 
-<header class="nav">
-  <a href="index.html" class="back-btn">← Back to Library</a>
-  <span class="nav-brand">📖 Read Book</span>
-</header>
+  <!-- Back to Top Button -->
+  <button id="backToTop" title="Back to top" type="button">↑</button>
 
-<main class="reading-container">
-  <h1 class="book-title">Select a Book</h1>
+  <!-- Header -->
+  <header class="nav">
+    <a href="index.html" class="back-btn">← Back to Library</a>
+    <span class="nav-brand">📖 Read Book</span>
+  </header>
 
-  <!-- Book Selection -->
-  <div>
-    <label>Select a PDF:</label>
-    <select class="form-select" onchange="loadBook(this.value)" aria-label="Select Book PDF">
-      <option value="">-- Choose a Book --</option>
-      <option value="books/my-first-book.pdf">My First Book</option>
-      <option value="books/dragon-story.pdf">Dragon Story</option>
-      <option value="books/poems.pdf">Poems</option>
-    </select>
-  </div>
+  <!-- Main Content -->
+  <main class="reading-container">
+    <h1 class="book-title">Select a Book</h1>
 
-  <!-- PDF Viewer -->
-  <div >
-    <iframe title="book0" id="bookViewer" src=""></iframe>
-  </div>
-</main>
+    <!-- Book Selection Dropdown -->
+    <div>
+      <label for="bookDropdown">Choose a PDF:</label>
+      <select id="bookDropdown" class="form-select" onchange="loadBook(this.value)">
+        <option value="">-- Select a Book --</option>
+        <option value="books/mr-chocolate-kiss.pdf">Mr. Chocolate Kiss</option>
+        <option value="books/dragon-story.pdf">Dragon Story</option>
+        <option value="books/poems.pdf">Poems</option>
+      </select>
+    </div>
 
-<!-- FOOTER -->
-<footer class="site-footer">
-  <p>Author: Sarah Morales | <span id="year"></span></p>
-  <p>
-    <a type="button" href="privacyPolicy.html">Privacy Policy</a> |
-    <a type="button" href="legalDisclaimer.html">Legal Disclaimer</a>
-  </p>
-</footer>
-<script>
-function loadBook(filePath) {
-  if(!filePath) return;
-  document.getElementById("bookViewer").src = filePath;
-}
-</script>
+    <!-- Embedded PDF Viewer -->
+    <object id="bookViewer" data="" type="application/pdf" width="100%" height="600px" style="border:2px solid var(--forest); border-radius:16px; margin-top:1rem;">
+      <p>Your browser does not support PDFs. 
+      <a href="">Download the PDF</a>.</p>
+    </object>
+  </main>
 
-<script>
-// Back to Top Button Logic
-const backToTop = document.getElementById("backToTop");
+  <!-- Footer -->
+  <footer class="site-footer">
+    <p>Author: Sarah Morales | <span id="year"></span></p>
+    <p>
+      <a href="privacyPolicy.html">Privacy Policy</a> |
+      <a href="legalDisclaimer.html">Legal Disclaimer</a>
+    </p>
+  </footer>
 
-window.onscroll = function() {
-  if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
-    backToTop.style.display = "block";
-  } else {
-    backToTop.style.display = "none";
-  }
-};
+  <!-- Scripts -->
+  <script>
+    const bookViewer = document.getElementById("bookViewer");
 
-backToTop.addEventListener("click", () => {
-  window.scrollTo({ top: 0, behavior: "smooth" });
-});
+    // Load selected PDF in the object tag
+    function loadBook(filePath) {
+      if (!filePath) return;
+      bookViewer.data = filePath;
+      // Update download link in case browser doesn't support PDF
+      bookViewer.querySelector("a").href = filePath;
+    }
 
-// Set current year dynamically in footer
-document.getElementById("year").textContent = new Date().getFullYear();
+    // Back to Top Button Logic
+    const backToTop = document.getElementById("backToTop");
+    window.onscroll = function() {
+      if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+        backToTop.style.display = "block";
+      } else {
+        backToTop.style.display = "none";
+      }
+    };
+    backToTop.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
 
-</script>
+    // Set current year
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
 
 </body>
 </html>
