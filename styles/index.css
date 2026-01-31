@@ -6,6 +6,7 @@
   --cream: #f6f1eb;
 }
 
+/* RESET */
 * {
   box-sizing: border-box;
   font-family: system-ui, sans-serif;
@@ -13,18 +14,19 @@
   padding: 0;
 }
 
+/* PAGE */
 body {
   background: var(--cream);
   color: var(--coffee);
 }
 
-/* NAVBAR (simplified) */
+/* NAVBAR — FOREST GREEN */
 .nav {
   display: flex;
   align-items: center;
   padding: 1rem 1.5rem;
   background: var(--forest);
-  color: white;
+  color: var(--cream);
   border-bottom: 2px solid var(--sage);
 }
 
@@ -33,7 +35,7 @@ body {
   align-items: center;
   gap: 0.5rem;
   text-decoration: none;
-  color: white;
+  color: var(--cream);
   font-weight: 600;
 }
 
@@ -48,7 +50,7 @@ body {
   object-fit: contain;
 }
 
-/* JUMBOTRON */
+/* JUMBOTRON — SAGE / FOREST + CREAM TEXT */
 .jumbotron {
   display: flex;
   flex-wrap: wrap;
@@ -56,14 +58,24 @@ body {
   padding: 2rem;
   background: var(--sage);
   margin: 1.5rem auto;
+  color: var(--cream);
+  border: 2px solid var(--forest);
 }
+
+.jumbotron h1,
+.jumbotron h3,
+.jumbotron p {
+  color: var(--cream);
+}
+
 .jumbotron img {
   width: 150px;
   border-radius: 50%;
   margin-right: 1.5rem;
+  border: 3px solid var(--cream);
 }
 
-/* CONTROLS */
+/* CONTROLS — COFFEE BUTTONS */
 .controls {
   display: flex;
   justify-content: center;
@@ -75,83 +87,109 @@ body {
   padding: 0.75rem 1.25rem;
   border-radius: 10px;
   border: none;
-  background: var(--forest);
-  color: white;
+  background: var(--coffee);
+  color: var(--cream);
   cursor: pointer;
 }
 
-/* BOOK CARDS */
+.controls button:hover {
+  background: var(--forest);
+}
+
+/* BOOK CARDS — MINT BACKGROUND */
 .book-card {
-  background: white;
+  background: var(--mint);
   margin: 1.5rem auto;
   padding: 1.5rem;
   width: 95%;
   border-radius: 16px;
+  border: 2px solid var(--coffee);
   box-shadow: 0 8px 20px rgba(0,0,0,0.1);
 }
 
+/* TITLE INPUT — CREAM SURFACE */
 .book-card .title {
   width: 100%;
   padding: 0.75rem;
   font-size: 1.1rem;
   margin-bottom: 1rem;
+  background: var(--cream);
+  border: 2px solid var(--coffee);
+  border-radius: 8px;
+  color: var(--coffee);
 }
 
+/* STAGES */
 .stages {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
+  margin-bottom: 1rem;
 }
 
+/* DATES — CLEAN + SPACED */
 .dates {
   display: flex;
   flex-direction: column;
-  margin-top: 1rem;
+  gap: 0.75rem;
 }
 
+.book-card .dates label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 500;
+}
+
+/* DATE INPUTS — CREAM FOR READABILITY */
+.dates input {
+  padding: 0.4rem 0.5rem;
+  background: var(--cream);
+  border: 2px solid var(--coffee);
+  border-radius: 6px;
+  color: var(--coffee);
+}
+
+/* RESET / DELETE BUTTON — COFFEE */
 .reset-card {
   margin-top: 1rem;
-  background: var(--mint);
+  background: var(--coffee);
+  color: var(--cream);
   border: none;
   padding: 0.6rem;
   border-radius: 8px;
   cursor: pointer;
 }
 
-/* Add space between title/stages and dates */
-.book-card .dates label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem; /* space between label text and input */
+.reset-card:hover {
+  background: var(--forest);
 }
 
-
-
-/* Back to Top */
+/* BACK TO TOP */
 #backToTop {
   display: none;
   position: fixed;
   bottom: 40px;
   right: 40px;
   z-index: 99;
-  background: var(--forest);
-  color: white;
+  background: var(--coffee);
+  color: var(--cream);
   border: none;
   padding: 0.75rem 1rem;
   border-radius: 50%;
   font-size: 1.25rem;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  transition: background 0.3s;
-}
-#backToTop:hover {
-  background: var(--coffee);
 }
 
-/* FOOTER */
+#backToTop:hover {
+  background: var(--forest);
+}
+
+/* FOOTER — FOREST */
 .site-footer {
   background: var(--forest);
-  color: white;
+  color: var(--cream);
   text-align: center;
   padding: 1.25rem;
   margin-top: 2rem;
@@ -167,40 +205,10 @@ body {
   text-decoration: underline;
 }
 
-/* RESPONSIVE FOOTER */
-@media(max-width:600px){
+/* RESPONSIVE */
+@media (max-width: 600px) {
   .site-footer p {
     font-size: 0.9rem;
     margin: 0.25rem 0;
   }
-}
-
-
-.reading-container {
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-  line-height: 1.7;
-  font-size: 1rem;
-  color: var(--coffee);
-}
-
-.reading-container h1 {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-  text-align: center;
-}
-
-.reading-container h2 {
-  font-size: 1.5rem;
-  margin-top: 1.5rem;
-  margin-bottom: 0.5rem;
-  color: var(--forest);
-}
-
-.reading-container p {
-  margin-bottom: 1rem;
 }
