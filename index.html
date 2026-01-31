@@ -7,20 +7,24 @@
   <link rel="stylesheet" href="styles/index.css" />
 </head>
 <body>
+<!-- Back to Top Button -->
+<button id="backToTop" title="Back to top" type="button">↑ Back To Top</button>
 
 <!-- NAV -->
 <header class="nav">
-  <div class="nav-brand">📚 Book Tracker</div>
-  <button class="hamburger" id="hamburger">☰</button>
-  <nav id="navMenu">
-    <button>1</button>
-    <button>2</button>
-    <button>3</button>
-    <button>4</button>
-    <button>5</button>
-    <button>6</button>
-  </nav>
+  <div class="nav-left">
+    <img src="logo.png" alt="Logo" class="nav-logo">
+    <span class="nav-brand">📚 Book Tracker</span>
+  </div>
+
+  <button type="button" class="hamburger" id="hamburger">☰</button>
+
+  <div class="nav-menu" id="navMenu">
+    <a href="index.html">Home</a>
+    <a href="book.html">Read Book</a>
+  </div>
 </header>
+
 
 <!-- JUMBOTRON -->
 <section class="jumbotron">
@@ -40,6 +44,15 @@
 
   <section id="cardsContainer"></section>
 </main>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <p>Author: Sarah Morales | <span id="year"></span></p>
+  <p>
+    <a href="privacy.html">Privacy Policy</a> |
+    <a href="disclaimer.html">Legal Disclaimer</a>
+  </p>
+</footer>
 
 <script>
 /* STORAGE */
@@ -178,6 +191,27 @@ document.getElementById("hamburger").onclick = () => {
 
 /* INIT */
 renderCards();
+</script>
+
+<script>
+// Back to Top Button Logic
+const backToTop = document.getElementById("backToTop");
+
+window.onscroll = function() {
+  if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+    backToTop.style.display = "block";
+  } else {
+    backToTop.style.display = "none";
+  }
+};
+
+backToTop.addEventListener("click", () => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+// Set current year dynamically in footer
+document.getElementById("year").textContent = new Date().getFullYear();
+
 </script>
 
 </body>

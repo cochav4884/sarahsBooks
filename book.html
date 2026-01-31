@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="styles/index.css">
 </head>
 <body>
+<!-- Back to Top Button -->
+<button id="backToTop" title="Back to top" type="button">↑ Back To Top</button>
 
 <header class="nav">
   <a href="index.html" class="back-btn">← Back to Library</a>
@@ -33,11 +35,40 @@
   </div>
 </main>
 
+<!-- FOOTER -->
+<footer class="site-footer">
+  <p>Author: Sarah Morales | <span id="year"></span></p>
+  <p>
+    <a href="privacy.html">Privacy Policy</a> |
+    <a href="disclaimer.html">Legal Disclaimer</a>
+  </p>
+</footer>
 <script>
 function loadBook(filePath) {
   if(!filePath) return;
   document.getElementById("bookViewer").src = filePath;
 }
+</script>
+
+<script>
+// Back to Top Button Logic
+const backToTop = document.getElementById("backToTop");
+
+window.onscroll = function() {
+  if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+    backToTop.style.display = "block";
+  } else {
+    backToTop.style.display = "none";
+  }
+};
+
+backToTop.addEventListener("click", () => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+// Set current year dynamically in footer
+document.getElementById("year").textContent = new Date().getFullYear();
+
 </script>
 
 </body>
