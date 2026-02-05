@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <title>Book Tracker</title>
 
-  <!-- Favicon & Manifest -->
   <link rel="icon" type="image/png" href="public/favicon-96x96.png" sizes="96x96" />
   <link rel="icon" type="image/svg+xml" href="public/favicon.svg" />
   <link rel="shortcut icon" href="public/favicon.ico" />
@@ -17,157 +16,227 @@
 </head>
 <body>
 
-  <!-- Back to Top Button -->
-  <button type="button" id="backToTop" title="Back To Top">↑ Back To Top</button>
+<header class="nav">
+  <a href="index.html" class="logo-link">
+    <img src="images/logo.jpg" alt="Logo" class="nav-logo" />
+    <span class="nav-brand">📚 Book Tracker</span>
+  </a>
+</header>
 
-  <!-- NAV -->
-  <header class="nav">
-    <a href="index.html" class="logo-link">
-      <img src="images/logo.jpg" alt="Logo" class="nav-logo" />
-      <span class="nav-brand">📚 Book Tracker</span>
-    </a>
-  </header>
+<section class="jumbotron">
+  <img src="images/authorImage.jpg" alt="Author" />
+  <div>
+    <h1>Author: Sarah Winter Shaw</h1>
+    <h3>Self-Published</h3>
+    <p>Track every book from planning to publication.</p>
+  </div>
+</section>
 
-  <!-- JUMBOTRON -->
-  <section class="jumbotron">
-    <img src="images/authorImage.jpg" alt="Author" />
-    <div>
-      <h1>Author: Sarah Winter Shaw</h1>
-      <h3>Self-Published</h3>
-      <p>Track every book from idea to publication.</p>
-    </div>
-  </section>
+<main>
+  <section id="cardsContainer"></section>
 
-  <!-- MAIN -->
-  <main>
+  <div class="controls">
+    <button type="button" id="addCard">➕ Add Book</button>
+    <button type="button" id="resetAll">🔄 Reset All</button>
+  </div>
+</main>
 
-    <section id="cardsContainer"></section>
+  <!-- Footer -->
+ <footer class="site-footer">
+  <p>&copy; 2026 Sarah. All rights reserved.</p>
+  <p>
+    <a href="privacyPolicy.html">🔒 Privacy Policy</a> |
+    <a href="legalDisclaimer.html">📄 Legal Disclaimer</a>
+  </p>
+</footer>
 
-    <div class="controls">
-      <button type="button" id="addCard">➕ Add Book</button>
-      <button type="button" id="resetAll">🔄 Reset All</button>
-    </div>
-  </main>
+<script>
+const STORAGE_KEY = "bookCards";
+const STAGES = ["Planning", "Rough Draft", "Second Draft", "Final Draft", "Completed"];
 
-  <!-- FOOTER -->
-  <footer class="site-footer">
-    <p>Author: Sarah Morales | <span id="year"></span></p>
-    <p>
-      <a type="button" href="privacyPolicy.html">Privacy Policy</a> |
-      <a type="button" href="legalDisclaimer.html">Legal Disclaimer</a>
-    </p>
-  </footer>
+// ---------- CARD MODEL ----------
+function createEmptyCard() {
+  return {
+    title: "",
+    stages: Array(5).fill(false),
+    links: Array(5).fill(""),
+    startDate: "",
+    publishDate: "",
+    copyrightDate: ""
+  };
+}
 
-  <script>
-    /* STORAGE AND CARDS LOGIC */
-    const STORAGE_KEY = "bookCards";
+// ---------- STORAGE ----------
+function loadCards() {
+  const data = localStorage.getItem(STORAGE_KEY);
+  if (!data) return [];
+  return JSON.parse(data);
+}
 
-    function createEmptyCard() {
-      return { title:"", stages:[false,false,false,false,false], startDate:"", publishDate:"", copyrightDate:"" };
-    }
+function saveCards(cards) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(cards));
+}
 
-    function defaultCards() { return Array.from({length:12},()=>createEmptyCard()); }
-    function loadCards() { const data=localStorage.getItem(STORAGE_KEY); return data?JSON.parse(data):defaultCards(); }
-    function saveCards(cards){ localStorage.setItem(STORAGE_KEY,JSON.stringify(cards)); }
+// ---------- RENDER ----------
+function renderCards() {
+  const container = document.getElementById("cardsContainer");
+  container.innerHTML = "";
 
-    function renderCards() {
-      const container=document.getElementById("cardsContainer");
-      container.innerHTML="";
-      const cards=loadCards();
+  let cards = loadCards();
+  if (cards.length === 0) {
+    const newCard = createEmptyCard();
+    cards.push(newCard);
+    saveCards(cards);
+  }
 
-      cards.forEach((card, index) => {
-  const cardEl = document.createElement("div");
-  cardEl.className = "book-card";
-  cardEl.innerHTML = `
-    <div class="title-container">
-      <input class="title" placeholder="Book Title" value="${card.title}" />
-      <button class="open-book btn">Open Book</button>
-      <button class="delete-book btn">Delete Book</button>
-    </div>
-    <div class="stages">
-      ${["Planning","Rough Draft","Second Draft","Final Draft","Published"].map((s,i)=>
-        `<label><input type="checkbox" ${card.stages[i]?"checked":""}>${s}</label>`
-      ).join("")}
-    </div>
-    <div class="dates">
-      <label>Start Date<input type="date" value="${card.startDate}"/></label>
-      <label>Published<input type="date" value="${card.publishDate}"/></label>
-      <label>Copyright<input type="date" value="${card.copyrightDate}"/></label>
-    </div>
-    <button class="reset-card">Reset This Book</button>
-  `;
+  cards.forEach((card, index) => {
+    const cardEl = document.createElement("div");
+    cardEl.className = "book-card collapsed"; // collapsed by default
+    const isCompleted = card.stages[4];
 
-  // Save title on blur
-  const titleInput = cardEl.querySelector(".title");
-  titleInput.addEventListener("blur", () => { 
-    cards[index].title = titleInput.value; 
-    saveCards(cards); 
+    cardEl.innerHTML = `
+      <div class="title-container">
+        <input class="title" placeholder="Book Title" value="${card.title}" />
+        <button class="btn delete">🗑️ Delete Book</button>
+      </div>
+
+      <div class="card-content">
+        <div class="stages">
+          ${STAGES.map((s,i)=>`
+            <div class="stage-block">
+              <label>
+                <input type="checkbox" ${card.stages[i] ? "checked" : ""}>
+                ${s}
+              </label>
+              <input type="url" placeholder="Google Docs Link" value="${card.links[i]}" class="link-input" data-stage="${i}">
+            </div>
+          `).join("")}
+        </div>
+
+        <div class="dates">
+          <label>Start Date <input type="date" value="${card.startDate}"></label>
+          <label>Completed Date <input type="date" value="${card.completedDate}"></label>
+          <label>Published <input type="date" value="${card.publishDate}"></label>
+          <label>Copyright <input type="date" value="${card.copyrightDate}"></label>
+        </div>
+
+        <div class="card-actions">
+          <button class="btn read-book" ${isCompleted ? "" : "style='display:none'"}>📖 Read Book</button>
+          <button class="btn reset">🔄 Reset</button>
+        </div>
+      </div>
+    `;
+
+    const titleContainer = cardEl.querySelector(".title-container");
+    const titleInput = cardEl.querySelector(".title");
+
+   // ---------- ACCORDION ----------
+titleContainer.onclick = e => {
+  // Ignore clicks only on delete button
+  if (e.target.classList.contains("delete")) return;
+
+  // Close all other cards
+  document.querySelectorAll(".book-card").forEach(c => {
+    if (c !== cardEl) c.classList.add("collapsed");
   });
 
-  // Open Book button
-  cardEl.querySelector(".open-book").addEventListener("click", () => {
-    if(!titleInput.value){
-      alert("Please enter a book title first!");
-      return;
-    }
-    window.open("book.html", "_blank");
-  });
+  // Toggle this card
+  cardEl.classList.toggle("collapsed");
 
-  // Delete Book button
-  cardEl.querySelector(".delete-book").addEventListener("click", () => {
-    if(confirm(`Delete "${titleInput.value}"? This cannot be undone.`)) {
-      cards.splice(index, 1); // remove from array
+  // Focus the title input when opening
+  if (!cardEl.classList.contains("collapsed")) {
+    titleInput.focus();
+  }
+};
+
+
+    // ---------- TITLE ----------
+    titleInput.oninput = e => {
+      cards[index].title = e.target.value;
       saveCards(cards);
-      renderCards(); // re-render
-    }
-  });
-
-  // Stages checkboxes
-  cardEl.querySelectorAll(".stages input").forEach((box,i)=>box.addEventListener("change", e=>{
-    cards[index].stages[i]=e.target.checked;
-    saveCards(cards);
-  }));
-
-  // Dates
-  const dateInputs = cardEl.querySelectorAll(".dates input");
-  dateInputs[0].addEventListener("change", e=>cards[index].startDate=e.target.value);
-  dateInputs[1].addEventListener("change", e=>cards[index].publishDate=e.target.value);
-  dateInputs[2].addEventListener("change", e=>cards[index].copyrightDate=e.target.value);
-  dateInputs.forEach(i=>i.addEventListener("change",()=>saveCards(cards)));
-
-  // Reset card
-  cardEl.querySelector(".reset-card").addEventListener("click", () => {
-    cards[index] = createEmptyCard();
-    saveCards(cards);
-    renderCards();
-  });
-
-  container.appendChild(cardEl);
-});
-    }
-    /* BUTTONS */
-    document.getElementById("addCard").onclick=()=>{ 
-      const cards=loadCards(); 
-      cards.push(createEmptyCard()); 
-      saveCards(cards); 
-      renderCards();
-    };
-    document.getElementById("resetAll").onclick=()=>{
-      localStorage.removeItem(STORAGE_KEY); 
-      renderCards();
     };
 
-    /* INIT */
+    // ---------- DELETE BOOK ----------
+    cardEl.querySelector(".delete").onclick = () => {
+      if (confirm(`Delete "${titleInput.value}"? This cannot be undone.`)) {
+        cards.splice(index,1);
+        saveCards(cards);
+        renderCards();
+      }
+    };
+
+    // ---------- STAGES ----------
+    const stageCheckboxes = cardEl.querySelectorAll(".stages input[type=checkbox]");
+    stageCheckboxes.forEach((box,i) => {
+      box.onchange = e => {
+        cards[index].stages[i] = e.target.checked;
+        const readBtn = cardEl.querySelector(".read-book");
+        if(i === 4) { // Completed stage
+          readBtn.style.display = e.target.checked ? "inline-block" : "none";
+        }
+        saveCards(cards);
+      };
+    });
+
+    // ---------- LINKS ----------
+    cardEl.querySelectorAll(".link-input").forEach(input=>{
+      input.oninput = e => {
+        const stage = +input.dataset.stage;
+        cards[index].links[stage] = e.target.value;
+        saveCards(cards);
+      };
+    });
+
+    // ---------- DATES ----------
+    const dateInputs = cardEl.querySelectorAll(".dates input");
+    dateInputs[0].onchange = e => { cards[index].startDate = e.target.value; saveCards(cards); };
+    dateInputs[1].onchange = e => { cards[index].publishDate = e.target.value; saveCards(cards); };
+    dateInputs[2].onchange = e => { cards[index].copyrightDate = e.target.value; saveCards(cards); };
+
+    // ---------- READ BOOK ----------
+    cardEl.querySelector(".read-book").onclick = () => {
+      const completedLink = card.links[4];
+      if(!completedLink) {
+        alert("Please enter a Google Docs link for your completed book!");
+        return;
+      }
+      window.open(completedLink, "_blank");
+    };
+
+    // ---------- RESET CARD ----------
+    cardEl.querySelector(".reset").onclick = () => {
+      cards[index] = createEmptyCard();
+      saveCards(cards);
+      renderCards();
+    };
+
+    container.appendChild(cardEl);
+  });
+}
+
+// ---------- BUTTONS ----------
+document.getElementById("addCard").onclick = () => {
+  const cards = loadCards();
+  cards.push(createEmptyCard());
+  saveCards(cards);
+  renderCards();
+};
+
+document.getElementById("resetAll").onclick = () => {
+  if(confirm("Reset all books?")) {
+    localStorage.removeItem(STORAGE_KEY);
     renderCards();
+  }
+};
 
-    /* Back to Top */
-    const backToTop=document.getElementById("backToTop");
-    window.onscroll=()=>{ backToTop.style.display=(document.body.scrollTop>200||document.documentElement.scrollTop>200)?"block":"none"; };
-    backToTop.addEventListener("click",()=>{ window.scrollTo({top:0,behavior:"smooth"}); });
+// ---------- INIT ----------
+renderCards();
 
-    /* Year */
-    document.getElementById("year").textContent=new Date().getFullYear();
-  </script>
+// ---------- YEAR ----------
+document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+
 
 </body>
 </html>

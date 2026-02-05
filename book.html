@@ -13,6 +13,7 @@
   <link rel="manifest" href="public/site.webmanifest" />
 
   <!-- Custom Styles -->
+   <link rel="stylesheet" href="styles/index.css">
   <link rel="stylesheet" href="styles/book.css">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -28,46 +29,90 @@
     <span class="nav-brand">📖 Read Book</span>
   </header>
 
+  <section class="jumbotron">
+  <img src="images/authorImage.jpg" alt="Author" />
+  <div>
+    <h1>Author: Sarah Winter Shaw</h1>
+    <h3>Self-Published</h3>
+    <p>Read your completed books here.</p>
+  </div>
+</section>
+
   <!-- Main Content -->
   <main class="reading-container">
-    <h1 class="book-title">Select a Book</h1>
+    <h1 class="book-title">Read Your Book</h1>
 
     <!-- Book Selection Dropdown -->
     <div>
-      <label for="bookDropdown">Choose a PDF:</label>
+      <label for="bookDropdown">Select a Completed Book:</label>
       <select id="bookDropdown" class="form-select" onchange="loadBook(this.value)">
-        <option value="">-- Select a Book --</option>
-        <option value="books/mr-chocolate-kiss.pdf">Mr. Chocolate Kiss</option>
-        <option value="books/friendly-strays.pdf">Friendly Strays</option>
+        <option value="">-- No Completed Books --</option>
       </select>
     </div>
 
-    <!-- Embedded PDF Viewer -->
-    <object id="bookViewer" data="" type="application/pdf" width="100%" height="600px">
+    <!-- Embedded PDF / Google Doc Viewer -->
+    <object id="bookViewer" data="" type="application/pdf">
       <p>Your browser does not support PDFs. 
-      <a href="">Download the PDF</a>.</p>
+      <a id="downloadLink" href="" target="_blank">Download the PDF</a>.</p>
     </object>
   </main>
 
   <!-- Footer -->
-  <footer class="site-footer">
-    <p>Author: Sarah Morales | <span id="year"></span></p>
-    <p>
-      <a href="privacyPolicy.html">Privacy Policy</a> |
-      <a href="legalDisclaimer.html">Legal Disclaimer</a>
-    </p>
-  </footer>
+ <footer class="site-footer">
+  <p>&copy; 2026 Sarah. All rights reserved.</p>
+  <p>
+    <a href="privacyPolicy.html">🔒 Privacy Policy</a> |
+    <a href="legalDisclaimer.html">📄 Legal Disclaimer</a>
+  </p>
+</footer>
 
   <!-- Scripts -->
   <script>
     const bookViewer = document.getElementById("bookViewer");
+    const bookDropdown = document.getElementById("bookDropdown");
+    const downloadLink = document.getElementById("downloadLink");
 
-    // Load selected PDF in the object tag
-    function loadBook(filePath) {
-      if (!filePath) return;
+    // Load completed books from localStorage
+    const cards = JSON.parse(localStorage.getItem("bookCards") || "[]");
+    const completedBooks = cards
+      .map((c, i) => ({ ...c, index: i }))
+      .filter(c => c.stages[4]); // Completed stage
+
+    // Populate dropdown
+    if (completedBooks.length > 0) {
+      bookDropdown.innerHTML = `<option value="">-- Select a Book --</option>`;
+      completedBooks.forEach(book => {
+        const option = document.createElement("option");
+        option.value = book.index; // use index to retrieve later
+        option.textContent = book.title || `Book ${book.index + 1}`;
+        bookDropdown.appendChild(option);
+      });
+    } else {
+      bookDropdown.innerHTML = `<option value="">-- No Completed Books --</option>`;
+    }
+
+    // Load book into viewer
+    function loadBook(index) {
+      if (index === "") return;
+      const book = cards[index];
+
+      // Check if book has a link or PDF (for now assume PDF in publishDate placeholder)
+      const filePath = book.link || book.publishDateFile || ""; // placeholder, you can add a proper file path property
+      if (!filePath) {
+        bookViewer.innerHTML = `<p>No PDF or document uploaded for this book.</p>`;
+        downloadLink.href = "#";
+        return;
+      }
+
       bookViewer.data = filePath;
-      // Update download link in case browser doesn't support PDF
-      bookViewer.querySelector("a").href = filePath;
+      downloadLink.href = filePath;
+    }
+
+    // Auto-select active book if set
+    const activeBookIndex = localStorage.getItem("activeBookIndex");
+    if (activeBookIndex !== null) {
+      bookDropdown.value = activeBookIndex;
+      loadBook(activeBookIndex);
     }
 
     // Back to Top Button Logic

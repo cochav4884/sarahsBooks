@@ -4,74 +4,87 @@
   <meta charset="UTF-8">
   <title>Privacy Policy</title>
 
-<link rel="icon" type="image/png" href="public/favicon-96x96.png" sizes="96x96" />
-<link rel="icon" type="image/svg+xml" href="public/favicon.svg" />
-<link rel="shortcut icon" href="public/favicon.ico" />
-<link rel="apple-touch-icon" sizes="180x180" href="public/apple-touch-icon.png" />
-<meta name="apple-mobile-web-app-title" content="Book Tracker" />
-<link rel="manifest" href="public/site.webmanifest" />
+  <!-- Favicon & Manifest -->
+  <link rel="icon" type="image/png" href="public/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="public/favicon.svg" />
+  <link rel="shortcut icon" href="public/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="public/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-title" content="Book Tracker" />
+  <link rel="manifest" href="public/site.webmanifest" />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles/index.css">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="styles/index.css">
 </head>
 <body>
-<!-- Back to Top + Footer -->
-<button type="button" id="backToTop" title="Back to top">↑ Back To Top</button>
 
-<!-- NAV -->
-<header class="nav">
-  <a href="index.html" class="logo-link">
-    <img src="images/logo.jpg" alt="Logo" class="nav-logo" />
-    <span class="nav-brand">📚 Book Tracker</span>
-  </a>
-</header>
+  <!-- Back to Top -->
+  <button type="button" id="backToTop" title="Back to top">↑</button>
 
-<main class="reading-container">
-  <h1 class="book-title">Privacy Policy</h1>
-  <p>Welcome to the Book Tracker app. Your privacy is important to us. This page explains what information we collect and how we use it.</p>
+  <!-- Header -->
+  <header class="nav">
+    <a href="index.html" class="logo-link">
+      <img src="images/logo.jpg" alt="Logo" class="nav-logo" />
+      <span class="nav-brand">📚 Book Tracker</span>
+    </a>
+  </header>
 
-  <h2>Information Collection</h2>
-  <p>We do not collect any personal information from users. All data about books and progress is stored locally on your device using your browser's storage.</p>
+  <section class="jumbotron">
+  <img src="images/authorImage.jpg" alt="Author" />
+  <div>
+    <h1>Author: Sarah Winter Shaw</h1>
+    <h3>Self-Published</h3>
+  </div>
+</section>
 
-  <h2>Use of Information</h2>
-  <p>Since all information is local, it is never shared or transmitted to any server or third party.</p>
+  <!-- Main -->
+  <main class="reading-container">
+    <h1 class="book-title">Privacy Policy</h1>
 
-  <h2>Third-Party Content</h2>
-  <p>Any books uploaded by the user remain private on your device. We do not host or access uploaded content.</p>
+    <section class="policy-section">
+      <h2>Information Collection</h2>
+      <p>We do not collect any personal information from users. All data about books and progress is stored locally on your device using your browser's storage.</p>
+    </section>
 
-  <h2>Changes to Policy</h2>
-  <p>We may update this Privacy Policy from time to time. Please review this page periodically for updates.</p>
-</main>
+    <section class="policy-section">
+      <h2>Use of Information</h2>
+      <p>Since all information is local, it is never shared or transmitted to any server or third party.</p>
+    </section>
 
-<!-- FOOTER -->
-<footer class="site-footer">
-  <p>Author: Sarah Morales | <span id="year"></span></p>
-  <p>
-    <a type="button" href="privacyPolicy.html">Privacy Policy</a> |
-    <a type="button" href="legalDisclaimer.html">Legal Disclaimer</a>
-  </p>
-</footer>
+    <section class="policy-section">
+      <h2>Third-Party Content</h2>
+      <p>Any books uploaded by the user remain private on your device. We do not host or access uploaded content.</p>
+    </section>
 
-<script>
-/* Back to Top */
-const backToTop = document.getElementById("backToTop");
-window.onscroll = function() {
-  if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
-    backToTop.style.display = "block";
-  } else {
-    backToTop.style.display = "none";
-  }
-};
-backToTop.addEventListener("click", () => {
-  window.scrollTo({ top: 0, behavior: "smooth" });
-});
-document.getElementById("year").textContent = new Date().getFullYear();
+    <section class="policy-section">
+      <h2>Changes to Policy</h2>
+      <p>We may update this Privacy Policy from time to time. Please review this page periodically for updates.</p>
+    </section>
+  </main>
 
-/* Hamburger */
-document.getElementById("hamburger").onclick = () => {
-  document.getElementById("navMenu").classList.toggle("show");
-};
-</script>
+  <!-- Footer -->
+  <footer class="site-footer">
+    <p>&copy; 2026 Sarah. All rights reserved.</p>
+    <p>
+      <a href="privacyPolicy.html">🔒 Privacy Policy</a> |
+      <a href="legalDisclaimer.html">📄 Legal Disclaimer</a>
+    </p>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    // Back to Top
+    const backToTop = document.getElementById("backToTop");
+    window.onscroll = function() {
+      backToTop.style.display = (window.scrollY > 200) ? "block" : "none";
+    };
+    backToTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+
+    // Current Year (optional)
+    const year = new Date().getFullYear();
+    document.querySelectorAll(".site-footer span").forEach(el => el.textContent = year);
+  </script>
 
 </body>
 </html>

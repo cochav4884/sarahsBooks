@@ -18,7 +18,7 @@ body {
   color: var(--coffee);
 }
 
-/* NAV HEADER LIKE MAIN NAVBAR */
+/* NAV HEADER */
 .nav {
   display: flex;
   justify-content: space-between;
@@ -69,7 +69,6 @@ body {
   margin-bottom: 1rem;
 }
 
-/* Book selection dropdown */
 .reading-container select.form-select {
   width: 100%;
   padding: 0.5rem;
@@ -82,7 +81,7 @@ body {
   font-size: 1rem;
 }
 
-/* PDF Viewer */
+/* PDF / Doc Viewer */
 #bookViewer {
   width: 100%;
   height: 80vh;
@@ -155,13 +154,4 @@ body {
     font-size: 0.9rem;
     margin: 0.25rem 0;
   }
-}
-
-/* Embedded PDF Viewer */
-#bookViewer {
-  width: 100%;
-  height: 600px;
-  border: 2px solid var(--forest);
-  border-radius: 16px;
-  margin-top: 1rem;
 }
