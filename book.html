@@ -67,70 +67,51 @@
 </footer>
 
   <!-- Scripts -->
-  <script>
-    const bookViewer = document.getElementById("bookViewer");
-    const bookDropdown = document.getElementById("bookDropdown");
-    const downloadLink = document.getElementById("downloadLink");
+<script>
+const viewer = document.getElementById("bookViewer");
+const dropdown = document.getElementById("bookDropdown");
 
-    // Load completed books from localStorage
-    const cards = JSON.parse(localStorage.getItem("bookCards") || "[]");
-    const completedBooks = cards
-      .map((c, i) => ({ ...c, index: i }))
-      .filter(c => c.stages[4]); // Completed stage
+const cards = JSON.parse(localStorage.getItem("bookCards") || "[]");
+const completed = cards
+  .map((c,i)=>({ ...c, index:i }))
+  .filter(c => c.stages[4] && c.googleDoc);
 
-    // Populate dropdown
-    if (completedBooks.length > 0) {
-      bookDropdown.innerHTML = `<option value="">-- Select a Book --</option>`;
-      completedBooks.forEach(book => {
-        const option = document.createElement("option");
-        option.value = book.index; // use index to retrieve later
-        option.textContent = book.title || `Book ${book.index + 1}`;
-        bookDropdown.appendChild(option);
-      });
-    } else {
-      bookDropdown.innerHTML = `<option value="">-- No Completed Books --</option>`;
-    }
+// Populate dropdown
+dropdown.innerHTML = completed.length
+  ? `<option value="">-- Select a Book --</option>`
+  : `<option value="">-- No Completed Books --</option>`;
 
-    // Load book into viewer
-    function loadBook(index) {
-      if (index === "") return;
-      const book = cards[index];
+completed.forEach(b => {
+  const opt = document.createElement("option");
+  opt.value = b.index;
+  opt.textContent = b.title || `Book ${b.index+1}`;
+  dropdown.appendChild(opt);
+});
 
-      // Check if book has a link or PDF (for now assume PDF in publishDate placeholder)
-      const filePath = book.link || book.publishDateFile || ""; // placeholder, you can add a proper file path property
-      if (!filePath) {
-        bookViewer.innerHTML = `<p>No PDF or document uploaded for this book.</p>`;
-        downloadLink.href = "#";
-        return;
-      }
+// Convert Google Doc → embed
+function embedDoc(url) {
+  return url.replace("/edit", "/preview");
+}
 
-      bookViewer.data = filePath;
-      downloadLink.href = filePath;
-    }
+function loadBook(index) {
+  if (!index) return;
+  const book = cards[index];
+  viewer.outerHTML = `
+    <iframe id="bookViewer"
+      src="${embedDoc(book.googleDoc)}"
+      width="100%" height="600"
+      style="border-radius:16px;border:2px solid #2f4f3e;">
+    </iframe>`;
+}
 
-    // Auto-select active book if set
-    const activeBookIndex = localStorage.getItem("activeBookIndex");
-    if (activeBookIndex !== null) {
-      bookDropdown.value = activeBookIndex;
-      loadBook(activeBookIndex);
-    }
+// Auto-load last book
+const active = localStorage.getItem("activeBookIndex");
+if (active) {
+  dropdown.value = active;
+  loadBook(active);
+}
+</script>
 
-    // Back to Top Button Logic
-    const backToTop = document.getElementById("backToTop");
-    window.onscroll = function() {
-      if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
-        backToTop.style.display = "block";
-      } else {
-        backToTop.style.display = "none";
-      }
-    };
-    backToTop.addEventListener("click", () => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
-
-    // Set current year
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
 
 </body>
 </html>

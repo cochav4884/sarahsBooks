@@ -59,8 +59,9 @@ function createEmptyCard() {
   return {
     title: "",
     stages: Array(5).fill(false),
-    links: Array(5).fill(""),
+    googleDoc: "",
     startDate: "",
+    completedDate: "",
     publishDate: "",
     copyrightDate: ""
   };
@@ -68,9 +69,7 @@ function createEmptyCard() {
 
 // ---------- STORAGE ----------
 function loadCards() {
-  const data = localStorage.getItem(STORAGE_KEY);
-  if (!data) return [];
-  return JSON.parse(data);
+  return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
 }
 
 function saveCards(cards) {
@@ -84,126 +83,118 @@ function renderCards() {
 
   let cards = loadCards();
   if (cards.length === 0) {
-    const newCard = createEmptyCard();
-    cards.push(newCard);
+    cards.push(createEmptyCard());
     saveCards(cards);
   }
 
   cards.forEach((card, index) => {
     const cardEl = document.createElement("div");
-    cardEl.className = "book-card collapsed"; // collapsed by default
-    const isCompleted = card.stages[4];
+    cardEl.className = "book-card collapsed";
 
     cardEl.innerHTML = `
       <div class="title-container">
-        <input class="title" placeholder="Book Title" value="${card.title}" />
-        <button class="btn delete">🗑️ Delete Book</button>
+        <input class="title" placeholder="Book Title" value="${card.title}">
+        <button class="btn delete">🗑️ Delete</button>
       </div>
 
       <div class="card-content">
         <div class="stages">
           ${STAGES.map((s,i)=>`
-            <div class="stage-block">
-              <label>
-                <input type="checkbox" ${card.stages[i] ? "checked" : ""}>
-                ${s}
-              </label>
-              <input type="url" placeholder="Google Docs Link" value="${card.links[i]}" class="link-input" data-stage="${i}">
-            </div>
+            <label>
+              <input type="checkbox" ${card.stages[i] ? "checked" : ""} data-stage="${i}">
+              ${s}
+            </label>
           `).join("")}
         </div>
 
+        <div class="completed-link" style="display:${card.stages[4] ? "block" : "none"}">
+          <label>
+            Google Docs Link (Completed Book)
+            <input type="url" placeholder="Paste Google Docs link"
+              value="${card.googleDoc}">
+          </label>
+        </div>
+
         <div class="dates">
-          <label>Start Date <input type="date" value="${card.startDate}"></label>
-          <label>Completed Date <input type="date" value="${card.completedDate}"></label>
+          <label>Start <input type="date" value="${card.startDate}"></label>
+          <label>Completed <input type="date" value="${card.completedDate}"></label>
           <label>Published <input type="date" value="${card.publishDate}"></label>
           <label>Copyright <input type="date" value="${card.copyrightDate}"></label>
         </div>
 
         <div class="card-actions">
-          <button class="btn read-book" ${isCompleted ? "" : "style='display:none'"}>📖 Read Book</button>
+          <button class="btn read-book" ${card.stages[4] ? "" : "style='display:none'"}>📖 Read Book</button>
           <button class="btn reset">🔄 Reset</button>
         </div>
       </div>
     `;
 
-    const titleContainer = cardEl.querySelector(".title-container");
-    const titleInput = cardEl.querySelector(".title");
+    // Accordion
+    cardEl.querySelector(".title-container").onclick = e => {
+      if (e.target.classList.contains("delete")) return;
+      document.querySelectorAll(".book-card").forEach(c => c.classList.add("collapsed"));
+      cardEl.classList.toggle("collapsed");
+    };
 
-   // ---------- ACCORDION ----------
-titleContainer.onclick = e => {
-  // Ignore clicks only on delete button
-  if (e.target.classList.contains("delete")) return;
-
-  // Close all other cards
-  document.querySelectorAll(".book-card").forEach(c => {
-    if (c !== cardEl) c.classList.add("collapsed");
-  });
-
-  // Toggle this card
-  cardEl.classList.toggle("collapsed");
-
-  // Focus the title input when opening
-  if (!cardEl.classList.contains("collapsed")) {
-    titleInput.focus();
-  }
-};
-
-
-    // ---------- TITLE ----------
-    titleInput.oninput = e => {
+    // Title
+    cardEl.querySelector(".title").oninput = e => {
       cards[index].title = e.target.value;
       saveCards(cards);
     };
 
-    // ---------- DELETE BOOK ----------
+    // Delete
     cardEl.querySelector(".delete").onclick = () => {
-      if (confirm(`Delete "${titleInput.value}"? This cannot be undone.`)) {
-        cards.splice(index,1);
+      if (confirm("Delete this book?")) {
+        cards.splice(index, 1);
         saveCards(cards);
         renderCards();
       }
     };
 
-    // ---------- STAGES ----------
-    const stageCheckboxes = cardEl.querySelectorAll(".stages input[type=checkbox]");
-    stageCheckboxes.forEach((box,i) => {
+    // Stages
+    cardEl.querySelectorAll(".stages input").forEach(box => {
       box.onchange = e => {
-        cards[index].stages[i] = e.target.checked;
+        const stage = +e.target.dataset.stage;
+        cards[index].stages[stage] = e.target.checked;
+
+        const linkBox = cardEl.querySelector(".completed-link");
         const readBtn = cardEl.querySelector(".read-book");
-        if(i === 4) { // Completed stage
+
+        if (stage === 4) {
+          linkBox.style.display = e.target.checked ? "block" : "none";
           readBtn.style.display = e.target.checked ? "inline-block" : "none";
+          if (e.target.checked) {
+            cards[index].completedDate ||= new Date().toISOString().slice(0,10);
+          }
         }
         saveCards(cards);
       };
     });
 
-    // ---------- LINKS ----------
-    cardEl.querySelectorAll(".link-input").forEach(input=>{
-      input.oninput = e => {
-        const stage = +input.dataset.stage;
-        cards[index].links[stage] = e.target.value;
-        saveCards(cards);
-      };
-    });
-
-    // ---------- DATES ----------
-    const dateInputs = cardEl.querySelectorAll(".dates input");
-    dateInputs[0].onchange = e => { cards[index].startDate = e.target.value; saveCards(cards); };
-    dateInputs[1].onchange = e => { cards[index].publishDate = e.target.value; saveCards(cards); };
-    dateInputs[2].onchange = e => { cards[index].copyrightDate = e.target.value; saveCards(cards); };
-
-    // ---------- READ BOOK ----------
-    cardEl.querySelector(".read-book").onclick = () => {
-      const completedLink = card.links[4];
-      if(!completedLink) {
-        alert("Please enter a Google Docs link for your completed book!");
-        return;
-      }
-      window.open(completedLink, "_blank");
+    // Google Doc
+    cardEl.querySelector(".completed-link input").oninput = e => {
+      cards[index].googleDoc = e.target.value;
+      saveCards(cards);
     };
 
-    // ---------- RESET CARD ----------
+    // Dates
+    const d = cardEl.querySelectorAll(".dates input");
+    d[0].onchange = e => cards[index].startDate = e.target.value;
+    d[1].onchange = e => cards[index].completedDate = e.target.value;
+    d[2].onchange = e => cards[index].publishDate = e.target.value;
+    d[3].onchange = e => cards[index].copyrightDate = e.target.value;
+
+    // Read Book
+    cardEl.querySelector(".read-book").onclick = () => {
+      if (!card.googleDoc) {
+        alert("Please paste a Google Docs link first.");
+        return;
+      }
+      localStorage.setItem("activeBookIndex", index);
+      window.location.href = "book.html";
+    };
+
+    // Reset
     cardEl.querySelector(".reset").onclick = () => {
       cards[index] = createEmptyCard();
       saveCards(cards);
@@ -214,7 +205,7 @@ titleContainer.onclick = e => {
   });
 }
 
-// ---------- BUTTONS ----------
+// Buttons
 document.getElementById("addCard").onclick = () => {
   const cards = loadCards();
   cards.push(createEmptyCard());
@@ -223,18 +214,16 @@ document.getElementById("addCard").onclick = () => {
 };
 
 document.getElementById("resetAll").onclick = () => {
-  if(confirm("Reset all books?")) {
+  if (confirm("Reset all books?")) {
     localStorage.removeItem(STORAGE_KEY);
     renderCards();
   }
 };
 
-// ---------- INIT ----------
+// Init
 renderCards();
-
-// ---------- YEAR ----------
-document.getElementById("year").textContent = new Date().getFullYear();
 </script>
+
 
 
 
