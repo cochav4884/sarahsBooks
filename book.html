@@ -81,23 +81,25 @@
     });
 
     // Use published Google Doc embed link
-    function embedDoc(url) {
-      if (!url.includes("/pub?embedded=true")) {
-        alert("Please use a published Google Doc link (File → Publish to web → Embed).");
-      }
-      return url;
-    }
+function embedDoc(url) {
+  // Convert Google Docs /edit URL to /view URL
+  if (!url.includes("/edit")) {
+    alert("Please use a Google Docs link ending with /edit.");
+    return url;
+  }
+  return url.replace("/edit", "/view");
+}
 
-    function loadBook(index) {
-      if (!index) return;
-      const book = cards[index];
-      viewerWrapper.innerHTML = `
-        <iframe id="bookViewer" class="book-viewer" title="Book viewer"
-          src="${embedDoc(book.googleDoc)}"
-          width="100%" height="80vh" aria-label="Book content">
-        </iframe>`;
-      localStorage.setItem("activeBookIndex", index);
-    }
+function loadBook(index) {
+  if (!index) return;
+  const book = cards[index];
+  viewerWrapper.innerHTML = `
+    <iframe id="bookViewer" class="book-viewer" title="Book viewer"
+      src="${embedDoc(book.googleDoc)}"
+      width="100%" height="80vh" aria-label="Book content">
+    </iframe>`;
+  localStorage.setItem("activeBookIndex", index);
+}
 
     // Auto-load last book
     const active = localStorage.getItem("activeBookIndex");
