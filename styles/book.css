@@ -56,7 +56,7 @@ body {
 
 /* MAIN CONTENT */
 .reading-container {
-  max-width: 800px;
+  max-width: 900px;
   margin: 2rem auto;
   padding: 2rem;
   background: white;
@@ -81,16 +81,13 @@ body {
   font-size: 1rem;
 }
 
-/* PDF / Doc Viewer */
+/* Google Doc / PDF Viewer */
 #bookViewer {
   width: 100%;
   height: 80vh;
   border-radius: 16px;
   border: 2px solid var(--forest);
-  background: var(--cream);
   margin-top: 1rem;
-  transform: scale(1);
-  transform-origin: top left;
 }
 
 /* Back to Top Button */
@@ -146,20 +143,14 @@ body {
   .nav .nav-brand {
     font-size: 1.1rem;
   }
-  #bookViewer {
-    height: 60vh;
-  }
 }
 
-@media(max-width:480px){
+@media(max-width:600px){
   .reading-container {
     padding: 1rem;
   }
   .site-footer p {
     font-size: 0.9rem;
     margin: 0.25rem 0;
-  }
-  #bookViewer {
-    height: 50vh;
   }
 }

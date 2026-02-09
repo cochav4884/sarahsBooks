@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Read Book</title>
 
-  <!-- Favicon & Manifest -->
   <link rel="icon" type="image/png" href="public/favicon-96x96.png" sizes="96x96" />
   <link rel="icon" type="image/svg+xml" href="public/favicon.svg" />
   <link rel="shortcut icon" href="public/favicon.ico" />
@@ -12,18 +11,16 @@
   <meta name="apple-mobile-web-app-title" content="Book Tracker" />
   <link rel="manifest" href="public/site.webmanifest" />
 
-  <!-- Styles -->
   <link rel="stylesheet" href="styles/index.css">
   <link rel="stylesheet" href="styles/book.css">
+  <link rel="stylesheet" href="styles/book-viewer.css">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 
-  <!-- Back to Top Button -->
-  <button id="backToTop" title="Back to top" type="button">↑</button>
+  <button id="backToTop" title="Back to top">↑</button>
 
-  <!-- Header -->
   <header class="nav">
     <a href="index.html" class="back-btn">← Back to Library</a>
     <span class="nav-brand">📖 Read Book</span>
@@ -41,7 +38,6 @@
   <main class="reading-container">
     <h1 class="book-title">Read Your Book</h1>
 
-    <!-- Book Selection Dropdown -->
     <div>
       <label for="bookDropdown">Select a Completed Book:</label>
       <select id="bookDropdown" class="form-select" onchange="loadBook(this.value)">
@@ -49,8 +45,9 @@
       </select>
     </div>
 
-    <!-- Embedded Google Doc Viewer -->
-    <iframe id="bookViewer" src="" width="100%" height="600" style="border-radius:16px;border:2px solid #2f4f3e;"></iframe>
+    <div id="viewerWrapper">
+      <iframe id="bookViewer" class="book-viewer" title="Book viewer" src="" width="100%" height="80vh" aria-label="Book content"></iframe>
+    </div>
   </main>
 
   <footer class="site-footer">
@@ -61,58 +58,63 @@
     </p>
   </footer>
 
-<script>
-const viewer = document.getElementById("bookViewer");
-const dropdown = document.getElementById("bookDropdown");
+  <script>
+    const viewerWrapper = document.getElementById("viewerWrapper");
+    const dropdown = document.getElementById("bookDropdown");
+    const cards = JSON.parse(localStorage.getItem("bookCards") || "[]");
 
-const cards = JSON.parse(localStorage.getItem("bookCards") || "[]");
-const completed = cards
-  .map((c,i)=>({ ...c, index:i }))
-  .filter(c => c.stages[4] && c.googleDoc);
+    // Only completed books with a Google Doc link
+    const completedBooks = cards
+      .map((c,i)=>({ ...c, index:i }))
+      .filter(c => c.stages[4] && c.googleDoc);
 
-// Populate dropdown
-dropdown.innerHTML = completed.length
-  ? `<option value="">-- Select a Book --</option>`
-  : `<option value="">-- No Completed Books --</option>`;
+    // Populate dropdown
+    dropdown.innerHTML = completedBooks.length
+      ? `<option value="">-- Select a Book --</option>`
+      : `<option value="">-- No Completed Books --</option>`;
 
-completed.forEach(b => {
-  const opt = document.createElement("option");
-  opt.value = b.index;
-  opt.textContent = b.title || `Book ${b.index+1}`;
-  dropdown.appendChild(opt);
-});
+    completedBooks.forEach(b => {
+      const opt = document.createElement("option");
+      opt.value = b.index;
+      opt.textContent = b.title || `Book ${b.index+1}`;
+      dropdown.appendChild(opt);
+    });
 
-// Convert Google Doc → embed with minimal UI and better fit
-function embedDoc(url) {
-  return url.replace("/edit", "/preview") + "&rm=minimal&chrome=false&embedded=true";
-}
+    // Use published Google Doc embed link
+    function embedDoc(url) {
+      if (!url.includes("/pub?embedded=true")) {
+        alert("Please use a published Google Doc link (File → Publish to web → Embed).");
+      }
+      return url;
+    }
 
-// Load book into viewer
-function loadBook(index) {
-  if (!index) return;
-  const book = cards[index];
-  viewer.src = embedDoc(book.googleDoc);
-  localStorage.setItem("activeBookIndex", index);
-}
+    function loadBook(index) {
+      if (!index) return;
+      const book = cards[index];
+      viewerWrapper.innerHTML = `
+        <iframe id="bookViewer" class="book-viewer" title="Book viewer"
+          src="${embedDoc(book.googleDoc)}"
+          width="100%" height="80vh" aria-label="Book content">
+        </iframe>`;
+      localStorage.setItem("activeBookIndex", index);
+    }
 
-// Auto-load last selected book
-const active = localStorage.getItem("activeBookIndex");
-if (active) {
-  dropdown.value = active;
-  loadBook(active);
-}
+    // Auto-load last book
+    const active = localStorage.getItem("activeBookIndex");
+    if (active) {
+      dropdown.value = active;
+      loadBook(active);
+    }
 
-// Back to Top Button
-const backToTop = document.getElementById("backToTop");
-window.onscroll = () => {
-  if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
-    backToTop.style.display = "block";
-  } else {
-    backToTop.style.display = "none";
-  }
-};
-backToTop.addEventListener("click", () => window.scrollTo({ top:0, behavior:'smooth' }));
-</script>
+    // Back to Top button
+    const backToTop = document.getElementById("backToTop");
+    window.onscroll = () => {
+      backToTop.style.display = (document.documentElement.scrollTop > 200) ? "block" : "none";
+    };
+    backToTop.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  </script>
 
 </body>
 </html>
