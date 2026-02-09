@@ -6,6 +6,7 @@
   --cream: #f6f1eb;
 }
 
+/* RESET */
 * {
   box-sizing: border-box;
   font-family: system-ui, sans-serif;
@@ -56,7 +57,7 @@ body {
 
 /* MAIN CONTENT */
 .reading-container {
-  max-width: 900px;
+  max-width: 1000px;
   margin: 2rem auto;
   padding: 2rem;
   background: white;
@@ -71,9 +72,9 @@ body {
 
 .reading-container select.form-select {
   width: 100%;
-  padding: 0.5rem;
+  padding: 0.6rem;
   margin-top: 0.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
   border-radius: 8px;
   border: 2px solid var(--sage);
   background: var(--mint);
@@ -81,16 +82,42 @@ body {
   font-size: 1rem;
 }
 
-/* Google Doc / PDF Viewer */
-#bookViewer {
+/* ===============================
+   BOOK READER (IMPORTANT PART)
+   =============================== */
+
+/* Center the reader like a book page */
+#viewerWrapper {
+  display: flex;
+  justify-content: center;
   width: 100%;
-  height: 80vh;
-  border-radius: 16px;
-  border: 2px solid var(--forest);
   margin-top: 1rem;
 }
 
-/* Back to Top Button */
+/* Reader-style iframe */
+.book-viewer,
+#bookViewer {
+  width: 100%;
+  max-width: 900px;     /* Controls readable line length */
+  height: 80vh;
+
+  border: none;
+  border-radius: 14px;
+  background: white;
+
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+/* Prevent cramped zoom on small screens */
+@media (max-width: 900px) {
+  .book-viewer,
+  #bookViewer {
+    max-width: 100%;
+    height: 75vh;
+  }
+}
+
+/* BACK TO TOP BUTTON */
 #backToTop {
   display: none;
   position: fixed;
@@ -107,6 +134,7 @@ body {
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
   transition: background 0.3s;
 }
+
 #backToTop:hover {
   background: var(--coffee);
 }
@@ -130,25 +158,58 @@ body {
   text-decoration: underline;
 }
 
+/* PRINT / READER MODE */
+@media print {
+  body {
+    background: white;
+  }
+
+  .nav,
+  .jumbotron,
+  footer,
+  #backToTop,
+  select,
+  label {
+    display: none !important;
+  }
+
+  .reading-container {
+    box-shadow: none;
+    padding: 0;
+  }
+
+  #viewerWrapper {
+    margin: 0;
+  }
+
+  .book-viewer,
+  #bookViewer {
+    height: auto;
+    max-width: 100%;
+    box-shadow: none;
+  }
+}
+
 /* RESPONSIVE */
-@media(max-width:768px){
+@media (max-width: 768px) {
   .nav {
     flex-direction: column;
     gap: 0.5rem;
     text-align: center;
   }
+
   .nav .back-btn {
     align-self: flex-start;
   }
+
   .nav .nav-brand {
     font-size: 1.1rem;
   }
-}
 
-@media(max-width:600px){
   .reading-container {
     padding: 1rem;
   }
+
   .site-footer p {
     font-size: 0.9rem;
     margin: 0.25rem 0;

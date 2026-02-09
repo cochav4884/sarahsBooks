@@ -46,6 +46,13 @@
 const STORAGE_KEY = "bookCards";
 const STAGES = ["Planning", "Rough Draft", "Second Draft", "Final Draft", "Completed"];
 
+// ---------- HELPERS ----------
+function convertToEmbed(url) {
+  if (!url) return "";
+  if (url.includes("/pub?embedded=true")) return url;
+  return url.replace(/\/edit.*$/, "/pub?embedded=true");
+}
+
 // ---------- CREATE EMPTY CARD ----------
 function createEmptyCard() {
   return {
@@ -122,61 +129,41 @@ function renderCards() {
     `;
 
     // ---------- ACCORDION ----------
-    const titleContainer = cardEl.querySelector(".title-container");
-    const body = cardEl.querySelector(".card-content");
-    titleContainer.onclick = e => {
+    cardEl.querySelector(".title-container").onclick = e => {
       if (e.target.classList.contains("delete")) return;
       document.querySelectorAll(".book-card").forEach(c => c.classList.add("collapsed"));
       cardEl.classList.toggle("collapsed");
     };
 
-    // ---------- INPUTS ----------
     const titleInput = cardEl.querySelector(".title");
     const docInput = cardEl.querySelector(".completed-link input");
     const stageBoxes = cardEl.querySelectorAll(".stages input");
     const readBtn = cardEl.querySelector(".read-book");
-    const deleteBtn = cardEl.querySelector(".delete");
-    const resetBtn = cardEl.querySelector(".reset");
-    const dateInputs = cardEl.querySelectorAll(".dates input");
 
     function updateCard() {
       card.title = titleInput.value;
-      card.googleDoc = docInput.value.trim();
+      card.googleDoc = convertToEmbed(docInput.value.trim());
       stageBoxes.forEach(cb => card.stages[cb.dataset.stage] = cb.checked);
-      dateInputs[0].onchange = e => card.startDate = e.target.value;
-      dateInputs[1].onchange = e => card.completedDate = e.target.value;
-      dateInputs[2].onchange = e => card.publishDate = e.target.value;
-      dateInputs[3].onchange = e => card.copyrightDate = e.target.value;
 
-      // Show completed link & read button
-      if(card.stages[4] && card.googleDoc) {
-        cardEl.querySelector(".completed-link").style.display = "block";
-        readBtn.style.display = "inline-block";
-      } else if(card.stages[4]) {
-        cardEl.querySelector(".completed-link").style.display = "block";
-        readBtn.style.display = "none";
-      } else {
-        cardEl.querySelector(".completed-link").style.display = "none";
-        readBtn.style.display = "none";
-      }
+      readBtn.style.display = (card.stages[4] && card.googleDoc) ? "inline-block" : "none";
 
-      saveCards(loadCards().map((c,i)=>i===index?card:c));
-      cardEl.querySelector(".title-container .title").value = card.title;
+      const cards = loadCards();
+      cards[index] = card;
+      saveCards(cards);
     }
 
     titleInput.oninput = updateCard;
     docInput.oninput = updateCard;
     stageBoxes.forEach(cb => cb.onchange = updateCard);
 
-    // ---------- READ BOOK ----------
+    // ---------- READ ----------
     readBtn.onclick = () => {
-      if(!card.googleDoc) return alert("Please paste a Google Docs link first.");
       localStorage.setItem("activeBookIndex", index);
       window.location.href = "book.html";
     };
 
     // ---------- DELETE ----------
-    deleteBtn.onclick = () => {
+    cardEl.querySelector(".delete").onclick = () => {
       if(confirm("Delete this book?")) {
         const cards = loadCards();
         cards.splice(index,1);
@@ -186,7 +173,7 @@ function renderCards() {
     };
 
     // ---------- RESET ----------
-    resetBtn.onclick = () => {
+    cardEl.querySelector(".reset").onclick = () => {
       const cards = loadCards();
       cards[index] = createEmptyCard();
       saveCards(cards);
