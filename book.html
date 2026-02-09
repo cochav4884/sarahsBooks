@@ -82,13 +82,31 @@
 
     // Use published Google Doc embed link
 function embedDoc(url) {
-  // Convert Google Docs /edit URL to /view URL
-  if (!url.includes("/edit")) {
-    alert("Please use a Google Docs link ending with /edit.");
-    return url;
+  if (!url) return "";
+
+  // Remove any query parameters like ?usp=sharing
+  let cleanUrl = url.split("?")[0];
+
+  // If link ends with /edit → convert to /view
+  if (cleanUrl.endsWith("/edit")) {
+    return cleanUrl.replace("/edit", "/view");
   }
-  return url.replace("/edit", "/view");
+
+  // If link ends with /view → use as-is
+  if (cleanUrl.endsWith("/view")) {
+    return cleanUrl;
+  }
+
+  // If link ends with /pub → use as-is
+  if (cleanUrl.includes("/pub")) {
+    return cleanUrl;
+  }
+
+  // If none of the above → alert user
+  alert("Please use a standard Google Docs link ending with /edit, /view, or /pub.");
+  return url;
 }
+
 
 function loadBook(index) {
   if (!index) return;
