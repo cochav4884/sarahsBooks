@@ -92,20 +92,41 @@ body {
   justify-content: center;
   width: 100%;
   margin-top: 1rem;
+  padding: 0 1rem; /* padding so content doesn’t touch edges */
 }
 
 /* Reader-style iframe */
 .book-viewer,
 #bookViewer {
   width: 100%;
-  max-width: 900px;     /* Controls readable line length */
+  max-width: 900px;       /* Keeps lines readable */
+  min-width: 300px;       /* Prevents text from shrinking too small on phones */
   height: 80vh;
-
   border: none;
   border-radius: 14px;
   background: white;
-
   box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  overflow-x: auto;       /* Allows horizontal scroll if needed */
+  font-size: 1rem;        /* Ensures text is readable inside iframe */
+}
+
+/* Force images inside iframe to scale (if iframe supports CSS injection) */
+.book-viewer img,
+#bookViewer img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0.5rem auto;
+}
+
+/* Mobile adjustment */
+@media (max-width: 600px) {
+  .book-viewer,
+  #bookViewer {
+    height: 70vh;
+    min-width: 100%;
+    font-size: 0.95rem;
+  }
 }
 
 /* Prevent cramped zoom on small screens */
@@ -187,6 +208,12 @@ body {
     height: auto;
     max-width: 100%;
     box-shadow: none;
+  }
+
+  .book-viewer img,
+  #bookViewer img {
+    max-width: 100%;
+    height: auto;
   }
 }
 
