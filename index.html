@@ -2,14 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Book Tracker</title>
-
-  <link rel="icon" type="image/png" href="public/favicon-96x96.png" sizes="96x96" />
-  <link rel="icon" type="image/svg+xml" href="public/favicon.svg" />
-  <link rel="shortcut icon" href="public/favicon.ico" />
-  <link rel="apple-touch-icon" sizes="180x180" href="public/apple-touch-icon.png" />
-  <meta name="apple-mobile-web-app-title" content="Book Tracker" />
-  <link rel="manifest" href="public/site.webmanifest" />
+  <title>Sarah's Book Tracker</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="styles/index.css" />
@@ -41,8 +34,7 @@
   </div>
 </main>
 
-  <!-- Footer -->
- <footer class="site-footer">
+<footer class="site-footer">
   <p>&copy; 2026 Sarah. All rights reserved.</p>
   <p>
     <a href="privacyPolicy.html">🔒 Privacy Policy</a> |
@@ -54,7 +46,7 @@
 const STORAGE_KEY = "bookCards";
 const STAGES = ["Planning", "Rough Draft", "Second Draft", "Final Draft", "Completed"];
 
-// ---------- CARD MODEL ----------
+// ---------- CREATE EMPTY CARD ----------
 function createEmptyCard() {
   return {
     title: "",
@@ -123,79 +115,79 @@ function renderCards() {
         </div>
 
         <div class="card-actions">
-          <button class="btn read-book" ${card.stages[4] ? "" : "style='display:none'"}>📖 Read Book</button>
+          <button class="btn read-book" ${card.stages[4] && card.googleDoc ? "" : "style='display:none'"}>📖 Read Book</button>
           <button class="btn reset">🔄 Reset</button>
         </div>
       </div>
     `;
 
-    // Accordion
-    cardEl.querySelector(".title-container").onclick = e => {
+    // ---------- ACCORDION ----------
+    const titleContainer = cardEl.querySelector(".title-container");
+    const body = cardEl.querySelector(".card-content");
+    titleContainer.onclick = e => {
       if (e.target.classList.contains("delete")) return;
       document.querySelectorAll(".book-card").forEach(c => c.classList.add("collapsed"));
       cardEl.classList.toggle("collapsed");
     };
 
-    // Title
-    cardEl.querySelector(".title").oninput = e => {
-      cards[index].title = e.target.value;
-      saveCards(cards);
+    // ---------- INPUTS ----------
+    const titleInput = cardEl.querySelector(".title");
+    const docInput = cardEl.querySelector(".completed-link input");
+    const stageBoxes = cardEl.querySelectorAll(".stages input");
+    const readBtn = cardEl.querySelector(".read-book");
+    const deleteBtn = cardEl.querySelector(".delete");
+    const resetBtn = cardEl.querySelector(".reset");
+    const dateInputs = cardEl.querySelectorAll(".dates input");
+
+    function updateCard() {
+      card.title = titleInput.value;
+      card.googleDoc = docInput.value.trim();
+      stageBoxes.forEach(cb => card.stages[cb.dataset.stage] = cb.checked);
+      dateInputs[0].onchange = e => card.startDate = e.target.value;
+      dateInputs[1].onchange = e => card.completedDate = e.target.value;
+      dateInputs[2].onchange = e => card.publishDate = e.target.value;
+      dateInputs[3].onchange = e => card.copyrightDate = e.target.value;
+
+      // Show completed link & read button
+      if(card.stages[4] && card.googleDoc) {
+        cardEl.querySelector(".completed-link").style.display = "block";
+        readBtn.style.display = "inline-block";
+      } else if(card.stages[4]) {
+        cardEl.querySelector(".completed-link").style.display = "block";
+        readBtn.style.display = "none";
+      } else {
+        cardEl.querySelector(".completed-link").style.display = "none";
+        readBtn.style.display = "none";
+      }
+
+      saveCards(loadCards().map((c,i)=>i===index?card:c));
+      cardEl.querySelector(".title-container .title").value = card.title;
+    }
+
+    titleInput.oninput = updateCard;
+    docInput.oninput = updateCard;
+    stageBoxes.forEach(cb => cb.onchange = updateCard);
+
+    // ---------- READ BOOK ----------
+    readBtn.onclick = () => {
+      if(!card.googleDoc) return alert("Please paste a Google Docs link first.");
+      localStorage.setItem("activeBookIndex", index);
+      window.location.href = "book.html";
     };
 
-    // Delete
-    cardEl.querySelector(".delete").onclick = () => {
-      if (confirm("Delete this book?")) {
-        cards.splice(index, 1);
+    // ---------- DELETE ----------
+    deleteBtn.onclick = () => {
+      if(confirm("Delete this book?")) {
+        const cards = loadCards();
+        cards.splice(index,1);
         saveCards(cards);
         renderCards();
       }
     };
 
-    // Stages
-    cardEl.querySelectorAll(".stages input").forEach(box => {
-      box.onchange = e => {
-        const stage = +e.target.dataset.stage;
-        cards[index].stages[stage] = e.target.checked;
-
-        const linkBox = cardEl.querySelector(".completed-link");
-        const readBtn = cardEl.querySelector(".read-book");
-
-        if (stage === 4) {
-          linkBox.style.display = e.target.checked ? "block" : "none";
-          readBtn.style.display = e.target.checked ? "inline-block" : "none";
-          if (e.target.checked) {
-            cards[index].completedDate ||= new Date().toISOString().slice(0,10);
-          }
-        }
-        saveCards(cards);
-      };
-    });
-
-    // Google Doc
-    cardEl.querySelector(".completed-link input").oninput = e => {
-      cards[index].googleDoc = e.target.value;
-      saveCards(cards);
-    };
-
-    // Dates
-    const d = cardEl.querySelectorAll(".dates input");
-    d[0].onchange = e => cards[index].startDate = e.target.value;
-    d[1].onchange = e => cards[index].completedDate = e.target.value;
-    d[2].onchange = e => cards[index].publishDate = e.target.value;
-    d[3].onchange = e => cards[index].copyrightDate = e.target.value;
-
-    // Read Book
-    cardEl.querySelector(".read-book").onclick = () => {
-      if (!card.googleDoc) {
-        alert("Please paste a Google Docs link first.");
-        return;
-      }
-      localStorage.setItem("activeBookIndex", index);
-      window.location.href = "book.html";
-    };
-
-    // Reset
-    cardEl.querySelector(".reset").onclick = () => {
+    // ---------- RESET ----------
+    resetBtn.onclick = () => {
+      const cards = loadCards();
       cards[index] = createEmptyCard();
       saveCards(cards);
       renderCards();
@@ -205,7 +197,7 @@ function renderCards() {
   });
 }
 
-// Buttons
+// ---------- BUTTONS ----------
 document.getElementById("addCard").onclick = () => {
   const cards = loadCards();
   cards.push(createEmptyCard());
@@ -214,18 +206,15 @@ document.getElementById("addCard").onclick = () => {
 };
 
 document.getElementById("resetAll").onclick = () => {
-  if (confirm("Reset all books?")) {
+  if(confirm("Reset all books?")) {
     localStorage.removeItem(STORAGE_KEY);
     renderCards();
   }
 };
 
-// Init
+// ---------- INIT ----------
 renderCards();
 </script>
-
-
-
 
 </body>
 </html>
