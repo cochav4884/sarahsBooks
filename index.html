@@ -46,13 +46,6 @@
 const STORAGE_KEY = "bookCards";
 const STAGES = ["Planning", "Rough Draft", "Second Draft", "Final Draft", "Completed"];
 
-// ---------- HELPERS ----------
-function convertToEmbed(url) {
-  if (!url) return "";
-  if (url.includes("/pub?embedded=true")) return url;
-  return url.replace(/\/edit.*$/, "/pub?embedded=true");
-}
-
 // ---------- CREATE EMPTY CARD ----------
 function createEmptyCard() {
   return {
@@ -107,9 +100,13 @@ function renderCards() {
         </div>
 
         <div class="completed-link" style="display:${card.stages[4] ? "block" : "none"}">
+          <p class="helper-text">
+            📱 <strong>Mobile friendly:</strong><br>
+            In Google Docs tap <strong>Share → Anyone with link → Viewer</strong>, then paste the link below.
+          </p>
           <label>
-            Google Docs Link (Completed Book)
-            <input type="url" placeholder="Paste Google Docs link"
+            Google Docs Link (Viewer access)
+            <input type="url" placeholder="Paste shared Google Docs link"
               value="${card.googleDoc}">
           </label>
         </div>
@@ -129,41 +126,60 @@ function renderCards() {
     `;
 
     // ---------- ACCORDION ----------
-    cardEl.querySelector(".title-container").onclick = e => {
+    const titleContainer = cardEl.querySelector(".title-container");
+    titleContainer.onclick = e => {
       if (e.target.classList.contains("delete")) return;
       document.querySelectorAll(".book-card").forEach(c => c.classList.add("collapsed"));
       cardEl.classList.toggle("collapsed");
     };
 
+    // ---------- INPUTS ----------
     const titleInput = cardEl.querySelector(".title");
     const docInput = cardEl.querySelector(".completed-link input");
     const stageBoxes = cardEl.querySelectorAll(".stages input");
     const readBtn = cardEl.querySelector(".read-book");
+    const deleteBtn = cardEl.querySelector(".delete");
+    const resetBtn = cardEl.querySelector(".reset");
+    const dateInputs = cardEl.querySelectorAll(".dates input");
 
     function updateCard() {
       card.title = titleInput.value;
-      card.googleDoc = convertToEmbed(docInput.value.trim());
+      card.googleDoc = docInput.value.trim();
       stageBoxes.forEach(cb => card.stages[cb.dataset.stage] = cb.checked);
+      dateInputs.forEach((d,i)=>card[
+        ["startDate","completedDate","publishDate","copyrightDate"][i]
+      ] = d.value);
 
-      readBtn.style.display = (card.stages[4] && card.googleDoc) ? "inline-block" : "none";
+      if(card.stages[4] && card.googleDoc) {
+        cardEl.querySelector(".completed-link").style.display = "block";
+        readBtn.style.display = "inline-block";
+      } else if(card.stages[4]) {
+        cardEl.querySelector(".completed-link").style.display = "block";
+        readBtn.style.display = "none";
+      } else {
+        cardEl.querySelector(".completed-link").style.display = "none";
+        readBtn.style.display = "none";
+      }
 
-      const cards = loadCards();
-      cards[index] = card;
-      saveCards(cards);
+      saveCards(loadCards().map((c,i)=>i===index?card:c));
     }
 
     titleInput.oninput = updateCard;
     docInput.oninput = updateCard;
     stageBoxes.forEach(cb => cb.onchange = updateCard);
 
-    // ---------- READ ----------
+    // ---------- READ BOOK ----------
     readBtn.onclick = () => {
+      if(!card.googleDoc) {
+        alert("Please paste a Google Docs link with Viewer access.");
+        return;
+      }
       localStorage.setItem("activeBookIndex", index);
       window.location.href = "book.html";
     };
 
     // ---------- DELETE ----------
-    cardEl.querySelector(".delete").onclick = () => {
+    deleteBtn.onclick = () => {
       if(confirm("Delete this book?")) {
         const cards = loadCards();
         cards.splice(index,1);
@@ -173,7 +189,7 @@ function renderCards() {
     };
 
     // ---------- RESET ----------
-    cardEl.querySelector(".reset").onclick = () => {
+    resetBtn.onclick = () => {
       const cards = loadCards();
       cards[index] = createEmptyCard();
       saveCards(cards);
