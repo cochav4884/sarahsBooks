@@ -89,6 +89,8 @@ body {
   border: 2px solid var(--forest);
   background: var(--cream);
   margin-top: 1rem;
+  transform: scale(1);
+  transform-origin: top left;
 }
 
 /* Back to Top Button */
@@ -144,14 +146,20 @@ body {
   .nav .nav-brand {
     font-size: 1.1rem;
   }
+  #bookViewer {
+    height: 60vh;
+  }
 }
 
-@media(max-width:600px){
+@media(max-width:480px){
   .reading-container {
     padding: 1rem;
   }
   .site-footer p {
     font-size: 0.9rem;
     margin: 0.25rem 0;
+  }
+  #bookViewer {
+    height: 50vh;
   }
 }

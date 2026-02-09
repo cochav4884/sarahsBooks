@@ -12,8 +12,8 @@
   <meta name="apple-mobile-web-app-title" content="Book Tracker" />
   <link rel="manifest" href="public/site.webmanifest" />
 
-  <!-- Custom Styles -->
-   <link rel="stylesheet" href="styles/index.css">
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles/index.css">
   <link rel="stylesheet" href="styles/book.css">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -30,15 +30,14 @@
   </header>
 
   <section class="jumbotron">
-  <img src="images/authorImage.jpg" alt="Author" />
-  <div>
-    <h1>Author: Sarah Winter Shaw</h1>
-    <h3>Self-Published</h3>
-    <p>Read your completed books here.</p>
-  </div>
-</section>
+    <img src="images/authorImage.jpg" alt="Author" />
+    <div>
+      <h1>Author: Sarah Winter Shaw</h1>
+      <h3>Self-Published</h3>
+      <p>Read your completed books here.</p>
+    </div>
+  </section>
 
-  <!-- Main Content -->
   <main class="reading-container">
     <h1 class="book-title">Read Your Book</h1>
 
@@ -50,23 +49,18 @@
       </select>
     </div>
 
-    <!-- Embedded PDF / Google Doc Viewer -->
-    <object id="bookViewer" data="" type="application/pdf">
-      <p>Your browser does not support PDFs. 
-      <a id="downloadLink" href="" target="_blank">Download the PDF</a>.</p>
-    </object>
+    <!-- Embedded Google Doc Viewer -->
+    <iframe id="bookViewer" src="" width="100%" height="600" style="border-radius:16px;border:2px solid #2f4f3e;"></iframe>
   </main>
 
-  <!-- Footer -->
- <footer class="site-footer">
-  <p>&copy; 2026 Sarah. All rights reserved.</p>
-  <p>
-    <a href="privacyPolicy.html">🔒 Privacy Policy</a> |
-    <a href="legalDisclaimer.html">📄 Legal Disclaimer</a>
-  </p>
-</footer>
+  <footer class="site-footer">
+    <p>&copy; 2026 Sarah. All rights reserved.</p>
+    <p>
+      <a href="privacyPolicy.html">🔒 Privacy Policy</a> |
+      <a href="legalDisclaimer.html">📄 Legal Disclaimer</a>
+    </p>
+  </footer>
 
-  <!-- Scripts -->
 <script>
 const viewer = document.getElementById("bookViewer");
 const dropdown = document.getElementById("bookDropdown");
@@ -88,30 +82,37 @@ completed.forEach(b => {
   dropdown.appendChild(opt);
 });
 
-// Convert Google Doc → embed
+// Convert Google Doc → embed with minimal UI and better fit
 function embedDoc(url) {
-  return url.replace("/edit", "/preview");
+  return url.replace("/edit", "/preview") + "&rm=minimal&chrome=false&embedded=true";
 }
 
+// Load book into viewer
 function loadBook(index) {
   if (!index) return;
   const book = cards[index];
-  viewer.outerHTML = `
-    <iframe id="bookViewer"
-      src="${embedDoc(book.googleDoc)}"
-      width="100%" height="600"
-      style="border-radius:16px;border:2px solid #2f4f3e;">
-    </iframe>`;
+  viewer.src = embedDoc(book.googleDoc);
+  localStorage.setItem("activeBookIndex", index);
 }
 
-// Auto-load last book
+// Auto-load last selected book
 const active = localStorage.getItem("activeBookIndex");
 if (active) {
   dropdown.value = active;
   loadBook(active);
 }
-</script>
 
+// Back to Top Button
+const backToTop = document.getElementById("backToTop");
+window.onscroll = () => {
+  if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+    backToTop.style.display = "block";
+  } else {
+    backToTop.style.display = "none";
+  }
+};
+backToTop.addEventListener("click", () => window.scrollTo({ top:0, behavior:'smooth' }));
+</script>
 
 </body>
 </html>
